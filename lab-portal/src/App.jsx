@@ -320,7 +320,36 @@ function App() {
   const playerRef = useRef(null);
 
   // Playlist & Revision Mode States
-  const [viewMode, setViewMode] = useState('workspace');
+  const [viewMode, setViewMode] = useState(() => {
+    const path = window.location.pathname.replace(/^\/|\/$/g, '');
+    if (path === 'admin') return 'admin';
+    if (path === 'revision') return 'revision';
+    if (path === 'notes') return 'notes';
+    return 'workspace';
+  });
+
+  // Sync viewMode to browser URL history
+  useEffect(() => {
+    const currentPath = window.location.pathname.replace(/^\/|\/$/g, '');
+    const targetPath = viewMode === 'workspace' ? '' : viewMode;
+    if (currentPath !== targetPath) {
+      window.history.pushState(null, '', `/${targetPath}`);
+    }
+  }, [viewMode]);
+
+  // Listen to browser popstate (back/forward navigation)
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.replace(/^\/|\/$/g, '');
+      if (path === 'admin') setViewMode('admin');
+      else if (path === 'revision') setViewMode('revision');
+      else if (path === 'notes') setViewMode('notes');
+      else setViewMode('workspace');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   const [autoPlayNext, setAutoPlayNext] = useState(true);
 
   // Notes Modal & Virtual HUD Pointer States
