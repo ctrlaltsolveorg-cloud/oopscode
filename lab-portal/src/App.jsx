@@ -27,7 +27,9 @@ import {
   Trash2,
   ArrowUp,
   ArrowDown,
-  Save
+  Save,
+  Upload,
+  Image
 } from 'lucide-react';
 import labsData from './data/labsData.json';
 import { theoryNotes } from './data/theoryNotes';
@@ -172,6 +174,260 @@ function AdminLoginForm({ onLoginSuccess }) {
             )}
           </button>
         </form>
+      </div>
+    </div>
+  );
+}
+
+function ImageUploaderModal({ isOpen, onClose, supabase, targetProblemTitle, onInsertLink }) {
+  const [dragActive, setDragActive] = useState(false);
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadedUrl, setUploadedUrl] = useState(null);
+  const [error, setError] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setFile(null);
+      setPreview(null);
+      setUploadedUrl(null);
+      setError(null);
+      setCopied(false);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleGlobalPaste = (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      
+      for (const item of items) {
+        if (item.type.indexOf('image') !== -1) {
+          const pastedFile = item.getAsFile();
+          if (pastedFile) {
+            e.preventDefault();
+            setFile(pastedFile);
+            setError(null);
+            setUploadedUrl(null);
+            
+            const reader = new FileReader();
+            reader.onload = () => setPreview(reader.result);
+            reader.readAsDataURL(pastedFile);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('paste', handleGlobalPaste);
+    return () => window.removeEventListener('paste', handleGlobalPaste);
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const droppedFile = e.dataTransfer.files[0];
+      if (droppedFile.type.startsWith('image/')) {
+        setFile(droppedFile);
+        setError(null);
+        setUploadedUrl(null);
+        
+        const reader = new FileReader();
+        reader.onload = () => setPreview(reader.result);
+        reader.readAsDataURL(droppedFile);
+      } else {
+        setError("Please drop an image file.");
+      }
+    }
+  };
+
+  const handleFileSelect = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+      setError(null);
+      setUploadedUrl(null);
+      
+      const reader = new FileReader();
+      reader.onload = () => setPreview(reader.result);
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+
+  const executeUpload = async () => {
+    if (!file) return;
+
+    setUploading(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload-image", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to upload image to host.");
+      }
+
+      const result = await response.json();
+      if (!result.url) {
+        throw new Error("No URL returned from server");
+      }
+
+      setUploadedUrl(result.url);
+    } catch (err) {
+      console.error("Upload error:", err);
+      setError(err.message || "Failed to upload image. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleCopy = () => {
+    if (uploadedUrl) {
+      navigator.clipboard.writeText(uploadedUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  return (
+    <div className="img-uploader-overlay" onClick={onClose}>
+      <div className="img-uploader-card" onClick={(e) => e.stopPropagation()}>
+        <div className="img-uploader-header">
+          <div className="img-uploader-title-wrapper">
+            <Image className="img-uploader-icon" size={20} />
+            <h3>Image to Link Converter</h3>
+          </div>
+          <button className="img-uploader-close" onClick={onClose} title="Close">
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="img-uploader-body">
+          {!uploadedUrl ? (
+            <div className="uploader-work-area">
+              <div 
+                className={`dropzone ${dragActive ? 'active' : ''} ${file ? 'has-file' : ''}`}
+                onDragEnter={handleDrag}
+                onDragOver={handleDrag}
+                onDragLeave={handleDrag}
+                onDrop={handleDrop}
+              >
+                {preview ? (
+                  <div className="preview-container">
+                    <img src={preview} alt="Upload preview" className="uploader-preview-img" />
+                    <button className="remove-preview-btn" onClick={() => { setFile(null); setPreview(null); }} title="Remove file">
+                      <X size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="dropzone-label">
+                    <Upload className="dropzone-icon" size={32} />
+                    <span className="dropzone-title">Drag & Drop Image Here</span>
+                    <span className="dropzone-subtitle">or click to browse files</span>
+                    <span className="dropzone-hint">Tip: Paste a screenshot directly using Ctrl+V / Cmd+V</span>
+                    <input type="file" accept="image/*" onChange={handleFileSelect} className="hidden-file-input" />
+                  </label>
+                )}
+              </div>
+
+              {error && (
+                <div className="uploader-error-box">
+                  <p>{error}</p>
+                </div>
+              )}
+
+              <button 
+                className="uploader-action-btn"
+                disabled={!file || uploading}
+                onClick={executeUpload}
+              >
+                {uploading ? (
+                  <>
+                    <span className="spinner" style={{ marginRight: '8px' }}></span>
+                    Uploading to Supabase...
+                  </>
+                ) : (
+                  <>
+                    <Upload size={14} />
+                    Upload Image
+                  </>
+                )}
+              </button>
+            </div>
+          ) : (
+            <div className="uploader-success-area">
+              <div className="success-icon-badge">
+                <Check size={28} />
+              </div>
+              <h4>Image Uploaded Successfully!</h4>
+              
+              <div className="success-preview-container">
+                <img src={uploadedUrl} alt="Uploaded success" className="uploader-success-img" />
+              </div>
+
+              <div className="uploader-url-field">
+                <label>Direct Image Link</label>
+                <div className="url-input-wrapper">
+                  <input type="text" readOnly value={uploadedUrl} onClick={(e) => e.target.select()} />
+                  <button className="url-copy-btn" onClick={handleCopy}>
+                    {copied ? <Check size={14} className="text-success" /> : <Copy size={14} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="uploader-success-actions">
+                {onInsertLink && targetProblemTitle !== null && (
+                  <button 
+                    className="uploader-insert-btn"
+                    onClick={() => {
+                      onInsertLink(uploadedUrl);
+                      onClose();
+                    }}
+                  >
+                    Insert Link into "{targetProblemTitle}"
+                  </button>
+                )}
+                
+                <button 
+                  className="uploader-reset-btn"
+                  onClick={() => {
+                    setFile(null);
+                    setPreview(null);
+                    setUploadedUrl(null);
+                  }}
+                >
+                  Upload Another Image
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -351,6 +607,10 @@ function App() {
   }, []);
 
   const [autoPlayNext, setAutoPlayNext] = useState(true);
+
+  // Image Uploader Modal States
+  const [isImageUploaderOpen, setIsImageUploaderOpen] = useState(false);
+  const [uploaderTargetProblemIndex, setUploaderTargetProblemIndex] = useState(null);
 
   // Notes Modal & Virtual HUD Pointer States
   const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
@@ -1662,6 +1922,10 @@ function App() {
                     <Download size={14} />
                     <span>Download Backup</span>
                   </button>
+                  <button className="action-btn-sm" onClick={() => { setUploaderTargetProblemIndex(null); setIsImageUploaderOpen(true); }}>
+                    <Image size={14} />
+                    <span>Image to Link</span>
+                  </button>
                   <button className="action-btn-sm text-danger" onClick={handleResetDefaults}>
                     <RotateCcw size={14} />
                     <span>Reset Defaults</span>
@@ -1774,7 +2038,19 @@ function App() {
                                   />
                                 </div>
                                 <div className="form-group">
-                                  <label>Notes Image Link</label>
+                                  <div className="admin-field-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                    <label style={{ margin: 0 }}>Notes Image Link</label>
+                                    <button 
+                                      type="button" 
+                                      className="admin-inline-upload-btn"
+                                      onClick={() => {
+                                        setUploaderTargetProblemIndex(pIdx);
+                                        setIsImageUploaderOpen(true);
+                                      }}
+                                    >
+                                      <Upload size={10} /> Upload / Paste
+                                    </button>
+                                  </div>
                                   <input 
                                     type="text" 
                                     value={prob.notesImageUrl || ''} 
@@ -2185,6 +2461,19 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Image Uploader Modal Popup */}
+      <ImageUploaderModal 
+        isOpen={isImageUploaderOpen} 
+        onClose={() => setIsImageUploaderOpen(false)} 
+        supabase={supabase}
+        targetProblemTitle={uploaderTargetProblemIndex !== null && selectedAdminLab?.problems[uploaderTargetProblemIndex] ? selectedAdminLab.problems[uploaderTargetProblemIndex].title : null}
+        onInsertLink={(url) => {
+          if (uploaderTargetProblemIndex !== null) {
+            handleUpdateProblemField(uploaderTargetProblemIndex, 'notesImageUrl', url);
+          }
+        }}
+      />
 
       {/* Futuristic Virtual HUD Pointer */}
       {virtualPointer.active && (
