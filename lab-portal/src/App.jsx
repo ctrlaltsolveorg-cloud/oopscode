@@ -32,6 +32,8 @@ import {
 import labsData from './data/labsData.json';
 import { theoryNotes } from './data/theoryNotes';
 import { quizzes } from './data/quizzes';
+import { supabase } from './utils/supabaseClient';
+
 
 // A tokenizer-based C syntax highlighter
 function highlightCSyntax(code) {
@@ -88,6 +90,93 @@ function escapeHtml(text) {
     .replace(/>/g, "&gt;");
 }
 
+function AdminLoginForm({ onLoginSuccess }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!supabase) {
+      setErrorMsg("Supabase client is not configured.");
+      return;
+    }
+    setLoading(true);
+    setErrorMsg('');
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      if (error) throw error;
+      if (data?.session) {
+        onLoginSuccess(data.session);
+      }
+    } catch (err) {
+      setErrorMsg(err.message || "Invalid email or password.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="admin-login-wrapper">
+      <div className="admin-login-card">
+        <div className="admin-login-header">
+          <div className="admin-login-icon-bg">
+            <Settings className="admin-login-icon" size={32} />
+          </div>
+          <h2>Admin Console Authentication</h2>
+          <p>Please log in using your Supabase credentials to manage lab content safely.</p>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="admin-login-form">
+          {errorMsg && (
+            <div className="admin-login-error">
+              <span>{errorMsg}</span>
+            </div>
+          )}
+          
+          <div className="login-form-group">
+            <label htmlFor="admin-email">Admin Email Address</label>
+            <input 
+              id="admin-email"
+              type="email" 
+              placeholder="e.g. admin@university.edu" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={loading}
+            />
+          </div>
+          
+          <div className="login-form-group">
+            <label htmlFor="admin-password">Password</label>
+            <input 
+              id="admin-password"
+              type="password" 
+              placeholder="••••••••••••" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              disabled={loading}
+            />
+          </div>
+          
+          <button type="submit" className="admin-login-submit" disabled={loading}>
+            {loading ? (
+              <span className="spinner">Authenticating...</span>
+            ) : (
+              <span>Authenticate Session</span>
+            )}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   // Config States (Persistent or default fallback)
   const [labs, setLabs] = useState(() => {
@@ -106,12 +195,101 @@ function App() {
   });
 
   // Admin selected lab and sub-tab selection state
-  const [adminSelectedLabNum, setAdminSelectedLabNum] = useState(() => {
-    const firstLab = labsData[0]?.labNum || null;
-    return firstLab;
-  });
+  const [adminSelectedLabNum, setAdminSelectedLabNum] = useState(null);
   const [adminActiveTab, setAdminActiveTab] = useState('problems'); // 'problems', 'theory', 'quizzes'
   const [saveStatus, setSaveStatus] = useState('');
+
+  // Supabase states
+  const [dbLoading, setDbLoading] = useState(false);
+  const [session, setSession] = useState(null);
+
+  // Initialize adminSelectedLabNum once labs are loaded
+  useEffect(() => {
+    if (labs && labs.length > 0 && adminSelectedLabNum === null) {
+      setAdminSelectedLabNum(labs[0].labNum);
+    }
+  }, [labs, adminSelectedLabNum]);
+
+  // Auth session listener
+  useEffect(() => {
+    if (supabase) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setSession(session);
+      });
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setSession(session);
+      });
+      return () => subscription.unsubscribe();
+    }
+  }, []);
+
+  // Fetch labs, theory notes, and quizzes from Supabase
+  useEffect(() => {
+    async function loadDataFromSupabase() {
+      if (!supabase) return;
+      try {
+        setDbLoading(true);
+        
+        // Fetch labs
+        const { data: labsFromDb, error: labsErr } = await supabase
+          .from('labs')
+          .select('*')
+          .order('labNum', { ascending: true });
+        
+        if (labsErr) throw labsErr;
+
+        // Fetch theory
+        const { data: theoryFromDb, error: theoryErr } = await supabase
+          .from('theory')
+          .select('*');
+        
+        if (theoryErr) throw theoryErr;
+
+        // Fetch quizzes
+        const { data: quizzesFromDb, error: quizzesErr } = await supabase
+          .from('quizzes')
+          .select('*');
+          
+        if (quizzesErr) throw quizzesErr;
+
+        if (labsFromDb && labsFromDb.length > 0) {
+          setLabs(labsFromDb);
+          
+          const newTheory = {};
+          if (theoryFromDb) {
+            theoryFromDb.forEach(t => {
+              newTheory[t.labNum] = {
+                concept: t.concept,
+                summary: t.summary,
+                keyPoints: t.keyPoints || [],
+                explanation: t.explanation
+              };
+            });
+          }
+          setTheory(newTheory);
+
+          const newQuizzes = {};
+          if (quizzesFromDb) {
+            quizzesFromDb.forEach(q => {
+              newQuizzes[q.labNum] = q.questions || [];
+            });
+          }
+          setQuizData(newQuizzes);
+          
+          setAdminSelectedLabNum(labsFromDb[0].labNum);
+        } else {
+          console.log("Supabase database tables are empty. Pre-populating from local static files...");
+        }
+      } catch (err) {
+        console.error("Failed to load data from Supabase, using local fallback state:", err);
+      } finally {
+        setDbLoading(false);
+      }
+    }
+    
+    loadDataFromSupabase();
+  }, []);
+
 
   // Selected admin helpers
   const selectedAdminLab = labs.find(l => l.labNum === adminSelectedLabNum);
@@ -433,41 +611,104 @@ function App() {
     localStorage.setItem('c_lab_quizzes', JSON.stringify(updatedQuizzes));
   };
 
-  const handleSaveToCodebase = async () => {
-    setSaveStatus("Saving changes directly to your local project files...");
+  const handleSaveToSupabase = async () => {
+    if (!supabase) {
+      alert("Supabase client is not initialized. Please verify your environment variables.");
+      return;
+    }
+    
+    setSaveStatus("Saving changes to Supabase database...");
     try {
-      const resLabs = await fetch('/api/save-labs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(labs)
-      });
-      const dataLabs = await resLabs.json();
-      if (!dataLabs.success) throw new Error(dataLabs.error || 'Failed to save labsData.json');
+      const activeLabNums = labs.map(l => l.labNum);
+      
+      // Delete any labs in Supabase that are no longer in our local state
+      if (activeLabNums.length > 0) {
+        const { error: delLabsErr } = await supabase.from('labs').delete().not('labNum', 'in', `(${activeLabNums.join(',')})`);
+        if (delLabsErr) throw delLabsErr;
+        
+        const { error: delTheoryErr } = await supabase.from('theory').delete().not('labNum', 'in', `(${activeLabNums.join(',')})`);
+        if (delTheoryErr) throw delTheoryErr;
+        
+        const { error: delQuizErr } = await supabase.from('quizzes').delete().not('labNum', 'in', `(${activeLabNums.join(',')})`);
+        if (delQuizErr) throw delQuizErr;
+      } else {
+        const { error: delLabsErr } = await supabase.from('labs').delete().neq('labNum', -1);
+        if (delLabsErr) throw delLabsErr;
+        
+        const { error: delTheoryErr } = await supabase.from('theory').delete().neq('labNum', -1);
+        if (delTheoryErr) throw delTheoryErr;
+        
+        const { error: delQuizErr } = await supabase.from('quizzes').delete().neq('labNum', -1);
+        if (delQuizErr) throw delQuizErr;
+      }
 
-      const resTheory = await fetch('/api/save-theory', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(theory)
-      });
-      const dataTheory = await resTheory.json();
-      if (!dataTheory.success) throw new Error(dataTheory.error || 'Failed to save theoryNotes.js');
+      // Upsert labs
+      for (const lab of labs) {
+        const { error } = await supabase.from('labs').upsert({
+          labNum: lab.labNum,
+          tutorial: lab.tutorial,
+          title: lab.title,
+          problems: lab.problems
+        });
+        if (error) throw error;
+      }
 
-      const resQuizzes = await fetch('/api/save-quizzes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(quizData)
-      });
-      const dataQuizzes = await resQuizzes.json();
-      if (!dataQuizzes.success) throw new Error(dataQuizzes.error || 'Failed to save quizzes.js');
+      // Upsert theory notes
+      for (const labNumStr of Object.keys(theory)) {
+        const num = parseInt(labNumStr, 10);
+        const t = theory[labNumStr];
+        const { error } = await supabase.from('theory').upsert({
+          labNum: num,
+          concept: t.concept,
+          summary: t.summary,
+          keyPoints: t.keyPoints || [],
+          explanation: t.explanation
+        });
+        if (error) throw error;
+      }
 
-      setSaveStatus("All changes saved directly to codebase successfully!");
+      // Upsert quizzes
+      for (const labNumStr of Object.keys(quizData)) {
+        const num = parseInt(labNumStr, 10);
+        const qList = quizData[labNumStr];
+        const { error } = await supabase.from('quizzes').upsert({
+          labNum: num,
+          questions: qList || []
+        });
+        if (error) throw error;
+      }
+
+      setSaveStatus("Saved to Supabase database successfully!");
+
+      // Try local sync
+      try {
+        await fetch('/api/save-labs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(labs)
+        });
+        await fetch('/api/save-theory', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(theory)
+        });
+        await fetch('/api/save-quizzes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(quizData)
+        });
+      } catch (e) {
+        console.log("Local filesystem sync skipped (expected in production)");
+      }
+
       setTimeout(() => setSaveStatus(""), 4000);
-    } catch (err) {
-      console.error(err);
-      setSaveStatus(`Changes saved to local browser storage only (Disk Save Error: ${err.message})`);
-      alert(`Vite Server Sync Error: ${err.message}.\n\nYour changes are saved to browser local storage. Make sure your npm run dev command is running.`);
+    } catch (error) {
+      console.error(error);
+      setSaveStatus(`Database Save Error: ${error.message}`);
+      alert(`Database Save Error: ${error.message}`);
     }
   };
+
 
   const handleDownloadBackup = () => {
     const backup = {
@@ -1334,9 +1575,13 @@ function App() {
             </div>
           </div>
         ) : viewMode === 'admin' ? (
-          <div className="admin-container">
-            {/* Admin Sidebar - list of labs */}
-            <aside className="admin-sidebar">
+          !session ? (
+            <AdminLoginForm onLoginSuccess={(sess) => setSession(sess)} />
+          ) : (
+            <div className="admin-container">
+              {/* Admin Sidebar - list of labs */}
+              <aside className="admin-sidebar">
+
               <div className="admin-sidebar-header">
                 <h3>Admin Console</h3>
                 <button className="admin-add-btn" onClick={handleAddLab} title="Add New Lab">
@@ -1377,12 +1622,12 @@ function App() {
               {/* Top action bar for saving to codebase */}
               <div className="admin-topbar">
                 <div className="admin-status">
-                  {saveStatus ? <span className="save-status-msg">{saveStatus}</span> : <span>Modify data and save back to local files.</span>}
+                  {saveStatus ? <span className="save-status-msg">{saveStatus}</span> : <span>Database connected. Click save to apply changes.</span>}
                 </div>
                 <div className="admin-global-actions">
-                  <button className="action-btn-sm btn-save-codebase" onClick={handleSaveToCodebase}>
+                  <button className="action-btn-sm btn-save-codebase" onClick={handleSaveToSupabase}>
                     <Save size={14} />
-                    <span>Save to Codebase</span>
+                    <span>Save to Database</span>
                   </button>
                   <button className="action-btn-sm" onClick={handleDownloadBackup}>
                     <Download size={14} />
@@ -1392,8 +1637,13 @@ function App() {
                     <RotateCcw size={14} />
                     <span>Reset Defaults</span>
                   </button>
+                  <button className="action-btn-sm btn-sign-out" onClick={() => supabase.auth.signOut()}>
+                    <X size={14} />
+                    <span>Sign Out</span>
+                  </button>
                 </div>
               </div>
+
               
               {/* Selected Lab Editor */}
               {selectedAdminLab ? (
@@ -1677,7 +1927,8 @@ function App() {
               )}
             </div>
           </div>
-        ) : (
+        )
+      ) : (
           <div className="dashboard-content">
             
             {!selectedProblem ? (
