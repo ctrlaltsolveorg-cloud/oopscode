@@ -17,7 +17,7 @@
         "index": 2,
         "title": "Program to find Simple Interest.",
         "fileName": "2_simple_interest.c",
-        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "videoUrl": "https://youtu.be/QEWLIA4lB4Q",
         "notesImageUrl": "notes/c_notes_basics.png"
       },
       {
@@ -25,7 +25,7 @@
         "index": 3,
         "title": "Program to find sum of individual digits of a given 5 digit number.",
         "fileName": "3_sum_digits.c",
-        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "videoUrl": "https://youtu.be/QEWLIA4lB4Q",
         "notesImageUrl": "notes/c_notes_basics.png"
       },
       {
@@ -50,7 +50,7 @@
         "index": 1,
         "title": "Program to find entered number is even or odd.",
         "fileName": "1_even_odd.c",
-        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "videoUrl": "https://youtu.be/QEWLIA4lB4Q",
         "notesImageUrl": "notes/c_notes_basics.png"
       },
       {
@@ -58,7 +58,7 @@
         "index": 2,
         "title": "Program to find greatest of 5 numbers",
         "fileName": "2_greatest_of_5.c",
-        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "videoUrl": "https://youtu.be/QEWLIA4lB4Q",
         "notesImageUrl": "notes/c_notes_basics.png"
       },
       {
@@ -66,7 +66,7 @@
         "index": 3,
         "title": "Program to implement all arithmetic operator using switch.",
         "fileName": "3_arithmetic_switch.c",
-        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "videoUrl": "https://youtu.be/QEWLIA4lB4Q",
         "notesImageUrl": "notes/c_notes_basics.png"
       },
       {
@@ -74,7 +74,7 @@
         "index": 4,
         "title": "Program to find out the given character is a vowel or consonant using switch.",
         "fileName": "4_vowel_consonant.c",
-        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "videoUrl": "https://youtu.be/QEWLIA4lB4Q",
         "notesImageUrl": "notes/c_notes_basics.png"
       },
       {
@@ -82,8 +82,8 @@
         "index": 5,
         "title": "Program to accept basic salary of an employee and find out salary if salary greater than 20000 deduct a tax 20% other than 15%.",
         "fileName": "5_salary_tax.c",
-        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
-        "notesImageUrl": "notes/c_notes_basics.png"
+        "videoUrl": "https://youtu.be/QEWLIA4lB4Q",
+        "notesImageUrl": "https://files.catbox.moe/pphrmx.png"
       }
     ],
     "created_at": "2026-06-27T09:30:01.188858+00:00",

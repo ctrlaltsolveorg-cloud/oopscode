@@ -2462,6 +2462,18 @@ function App() {
         </div>
       )}
 
+      {/* Floating Save Button for Admin panel */}
+      {viewMode === 'admin' && session && (
+        <button 
+          className="admin-floating-save-btn" 
+          onClick={handleSaveToSupabase}
+          title="Save Changes to Database"
+        >
+          <Save size={16} />
+          <span>Save to Database</span>
+        </button>
+      )}
+
       {/* Image Uploader Modal Popup */}
       <ImageUploaderModal 
         isOpen={isImageUploaderOpen} 

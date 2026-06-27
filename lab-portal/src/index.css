@@ -3290,3 +3290,36 @@ body {
   to { transform: translateY(0); opacity: 1; }
 }
 
+/* Floating Save Button */
+.admin-floating-save-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: var(--secondary);
+  color: #ffffff;
+  border: 1px solid var(--secondary-hover);
+  border-radius: 50px;
+  padding: 12px 24px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 999;
+  transition: all var(--transition-normal);
+  font-family: var(--sans-font);
+  letter-spacing: 0.3px;
+}
+
+.admin-floating-save-btn:hover {
+  background-color: var(--secondary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.admin-floating-save-btn:active {
+  transform: translateY(0);
+}
+
