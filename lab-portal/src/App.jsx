@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { 
-  Terminal, 
-  Search, 
-  ChevronRight, 
-  ChevronDown, 
-  Copy, 
-  Check, 
-  Download, 
+import {
+  Terminal,
+  Search,
+  ChevronRight,
+  ChevronDown,
+  Copy,
+  Check,
+  Download,
   Menu,
   X,
   Sun,
@@ -29,7 +29,22 @@ import {
   ArrowDown,
   Save,
   Upload,
-  Image
+  Image,
+  Home,
+  Code,
+  GraduationCap,
+  Trophy,
+  Cpu,
+  Flame,
+  Database,
+  Award,
+  Info,
+  Star,
+  Clock,
+  Zap,
+  ExternalLink,
+  ChevronUp,
+  Sparkles
 } from 'lucide-react';
 import labsData from './data/labsData.json';
 import { theoryNotes } from './data/theoryNotes';
@@ -40,15 +55,15 @@ import { supabase } from './utils/supabaseClient';
 // A tokenizer-based C syntax highlighter
 function highlightCSyntax(code) {
   if (!code) return "";
-  
+
   const tokenRegex = /(\/\/.*|\/\*[\s\S]*?\*\/|"[^"\\]*(?:\\.[^"\\]*)*"|'[^'\\]*(?:\\.[^'\\]*)*'|#include\s*<[^>]+>|#include\s*"[^"]+"|\b\w+\b|[^\w\s]+|\s+)/g;
-  
+
   const keywords = new Set([
     'int', 'float', 'double', 'char', 'void', 'struct', 'typedef', 'union',
     'if', 'else', 'while', 'for', 'do', 'switch', 'case', 'default',
     'break', 'continue', 'return', 'sizeof', 'const', 'extern', 'static'
   ]);
-  
+
   const stdFunctions = new Set([
     'main', 'printf', 'scanf', 'fopen', 'fclose', 'malloc', 'calloc', 'free',
     'strlen', 'strcpy', 'strcat', 'strcmp', 'exit', 'sqrt', 'pow', 'abs', 'fgets'
@@ -56,11 +71,11 @@ function highlightCSyntax(code) {
 
   let html = "";
   let match;
-  
+
   tokenRegex.lastIndex = 0;
   while ((match = tokenRegex.exec(code)) !== null) {
     const token = match[0];
-    
+
     if (token.startsWith('//') || token.startsWith('/*')) {
       html += `<span class="code-comment">${escapeHtml(token)}</span>`;
     } else if (token.startsWith('"') || token.startsWith("'")) {
@@ -81,7 +96,7 @@ function highlightCSyntax(code) {
       html += escapeHtml(token);
     }
   }
-  
+
   return html;
 }
 
@@ -90,6 +105,192 @@ function escapeHtml(text) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
+}
+
+function getCourseIcon(iconName, size = 20) {
+  switch (iconName) {
+    case 'Terminal': return <Terminal size={size} />;
+    case 'Cpu': return <Cpu size={size} />;
+    case 'Flame': return <Flame size={size} />;
+    case 'GraduationCap': return <GraduationCap size={size} />;
+    case 'Laptop': return <Laptop size={size} />;
+    case 'Database': return <Database size={size} />;
+    default: return <Code size={size} />;
+  }
+}
+
+function highlightCode(code, lang) {
+  if (!code) return '';
+  const escaped = escapeHtml(code);
+
+  if (lang === 'c' || lang === 'cpp' || lang === 'dsa') {
+    const keywords = /\b(const|int|float|double|char|void|class|public|private|protected|struct|new|delete|return|if|else|while|for|using|namespace|string|std|cout|cin|include|typedef|struct|nullptr)\b/g;
+    const directives = /(#include.*|#define.*)/g;
+    const strings = /("[^"]*")/g;
+    const comments = /(\/\/.*)/g;
+    const numbers = /\b(\d+)\b/g;
+
+    return escaped
+      .replace(comments, '<span class="code-comment">$1</span>')
+      .replace(directives, '<span class="code-include">$1</span>')
+      .replace(strings, '<span class="code-string">$1</span>')
+      .replace(keywords, '<span class="code-keyword">$1</span>')
+      .replace(numbers, '<span class="code-number">$1</span>');
+  } else if (lang === 'python') {
+    const keywords = /\b(def|class|return|if|elif|else|while|for|in|import|from|print|__name__|__main__|str|None)\b/g;
+    const strings = /("[^"]*"|'[^']*')/g;
+    const comments = /(#.*)/g;
+    const numbers = /\b(\d+)\b/g;
+
+    return escaped
+      .replace(comments, '<span class="code-comment">$1</span>')
+      .replace(strings, '<span class="code-string">$1</span>')
+      .replace(keywords, '<span class="code-keyword">$1</span>')
+      .replace(numbers, '<span class="code-number">$1</span>');
+  } else if (lang === 'java') {
+    const keywords = /\b(public|class|static|void|main|String|System|out|println|new|return|int|double|float)\b/g;
+    const strings = /("[^"]*")/g;
+    const comments = /(\/\/.*)/g;
+    const numbers = /\b(\d+)\b/g;
+
+    return escaped
+      .replace(comments, '<span class="code-comment">$1</span>')
+      .replace(strings, '<span class="code-string">$1</span>')
+      .replace(keywords, '<span class="code-keyword">$1</span>')
+      .replace(numbers, '<span class="code-number">$1</span>');
+  } else if (lang === 'sql') {
+    const keywords = /\b(SELECT|FROM|WHERE|AND|OR|ORDER BY|DESC|LIMIT|CREATE TABLE|ALTER COLUMN|DROP|INSERT|UPDATE|DELETE)\b/g;
+    const strings = /('[^']*')/g;
+    const comments = /(--.*)/g;
+    const numbers = /\b(\d+)\b/g;
+
+    return escaped
+      .replace(comments, '<span class="code-comment">$1</span>')
+      .replace(strings, '<span class="code-string">$1</span>')
+      .replace(keywords, '<span class="code-keyword">$1</span>')
+      .replace(numbers, '<span class="code-number">$1</span>');
+  }
+
+  return escaped;
+}
+
+function SyllabusAccordionItem({ item, isOpen, onToggle }) {
+  return (
+    <div className="syllabus-accordion-item">
+      <button className="syllabus-accordion-trigger" type="button" onClick={onToggle}>
+        <div className="syllabus-trigger-left">
+          <span className="syllabus-trigger-number">Mod {item.num}</span>
+          <span className="syllabus-trigger-title">{item.title}</span>
+        </div>
+        <div className="syllabus-trigger-meta">
+          {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        </div>
+      </button>
+      {isOpen && (
+        <div className="syllabus-accordion-content">
+          <div className="syllabus-topics-tags">
+            {item.topics.map((topic, idx) => (
+              <span key={idx} className="syllabus-topic-tag">{topic}</span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SyllabusModal({ course, onClose, onNotify }) {
+  const [openAccordionIndex, setOpenAccordionIndex] = useState(0);
+
+  if (!course) return null;
+
+  return (
+    <div className="syllabus-modal-overlay" onClick={onClose}>
+      <div className="syllabus-modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="syllabus-modal-header">
+          <div className="syllabus-modal-title-area">
+            <div className="syllabus-modal-icon">
+              {getCourseIcon(course.icon, 22)}
+            </div>
+            <div>
+              <h2>{course.name}</h2>
+              <p>{course.estimatedHours} &bull; {course.difficulty} Level</p>
+            </div>
+          </div>
+          <button className="syllabus-close-btn" onClick={onClose} aria-label="Close modal">
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="syllabus-modal-body">
+          {/* Prerequisites */}
+          <div className="syllabus-section-block">
+            <h3>Prerequisites</h3>
+            <div className="syllabus-pills-list">
+              {course.prerequisites.map((prereq, i) => (
+                <span key={i} className="syllabus-prereq-pill">{prereq}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Learning Outcomes */}
+          <div className="syllabus-section-block">
+            <h3>What You'll Learn</h3>
+            <ul className="syllabus-outcomes-list">
+              {course.learningOutcomes.map((outcome, i) => (
+                <li key={i}>{outcome}</li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Course Syllabus Accordion */}
+          <div className="syllabus-section-block">
+            <h3>Course Syllabus ({course.syllabus.length} Labs)</h3>
+            <div className="syllabus-accordion-list">
+              {course.syllabus.map((item, index) => (
+                <SyllabusAccordionItem
+                  key={index}
+                  item={item}
+                  isOpen={openAccordionIndex === index}
+                  onToggle={() => setOpenAccordionIndex(openAccordionIndex === index ? -1 : index)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Interview Topics */}
+          <div className="syllabus-section-block">
+            <h3>Viva &amp; Interview Focus</h3>
+            <div className="syllabus-topics-tags">
+              {course.interviewTopics.map((topic, i) => (
+                <span key={i} className="syllabus-topic-tag" style={{ border: '1px solid var(--primary-glow)', color: 'var(--primary)' }}>
+                  {topic}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="syllabus-modal-footer">
+          <div className="syllabus-footer-meta">
+            <span><Clock size={14} /> {course.moduleCount}</span>
+            <span><Award size={14} /> Certified Syllabus</span>
+          </div>
+          {course.status === 'active' ? (
+            <button className="syllabus-enroll-btn" onClick={onNotify}>
+              <Play size={14} />
+              <span>Resume Coding</span>
+            </button>
+          ) : (
+            <button className="syllabus-enroll-btn" onClick={onNotify}>
+              <Sparkles size={14} />
+              <span>Enroll / Notify Me</span>
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function AdminLoginForm({ onLoginSuccess }) {
@@ -132,40 +333,40 @@ function AdminLoginForm({ onLoginSuccess }) {
           <h2>Admin Console Authentication</h2>
           <p>Please log in using your Supabase credentials to manage lab content safely.</p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="admin-login-form">
           {errorMsg && (
             <div className="admin-login-error">
               <span>{errorMsg}</span>
             </div>
           )}
-          
+
           <div className="login-form-group">
             <label htmlFor="admin-email">Admin Email Address</label>
-            <input 
+            <input
               id="admin-email"
-              type="email" 
-              placeholder="e.g. admin@university.edu" 
+              type="email"
+              placeholder="e.g. admin@university.edu"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={loading}
             />
           </div>
-          
+
           <div className="login-form-group">
             <label htmlFor="admin-password">Password</label>
-            <input 
+            <input
               id="admin-password"
-              type="password" 
-              placeholder="••••••••••••" 
+              type="password"
+              placeholder="••••••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={loading}
             />
           </div>
-          
+
           <button type="submit" className="admin-login-submit" disabled={loading}>
             {loading ? (
               <span className="spinner">Authenticating...</span>
@@ -204,7 +405,7 @@ function ImageUploaderModal({ isOpen, onClose, supabase, targetProblemTitle, onI
     const handleGlobalPaste = (e) => {
       const items = e.clipboardData?.items;
       if (!items) return;
-      
+
       for (const item of items) {
         if (item.type.indexOf('image') !== -1) {
           const pastedFile = item.getAsFile();
@@ -213,7 +414,7 @@ function ImageUploaderModal({ isOpen, onClose, supabase, targetProblemTitle, onI
             setFile(pastedFile);
             setError(null);
             setUploadedUrl(null);
-            
+
             const reader = new FileReader();
             reader.onload = () => setPreview(reader.result);
             reader.readAsDataURL(pastedFile);
@@ -250,7 +451,7 @@ function ImageUploaderModal({ isOpen, onClose, supabase, targetProblemTitle, onI
         setFile(droppedFile);
         setError(null);
         setUploadedUrl(null);
-        
+
         const reader = new FileReader();
         reader.onload = () => setPreview(reader.result);
         reader.readAsDataURL(droppedFile);
@@ -266,7 +467,7 @@ function ImageUploaderModal({ isOpen, onClose, supabase, targetProblemTitle, onI
       setFile(selectedFile);
       setError(null);
       setUploadedUrl(null);
-      
+
       const reader = new FileReader();
       reader.onload = () => setPreview(reader.result);
       reader.readAsDataURL(selectedFile);
@@ -331,7 +532,7 @@ function ImageUploaderModal({ isOpen, onClose, supabase, targetProblemTitle, onI
         <div className="img-uploader-body">
           {!uploadedUrl ? (
             <div className="uploader-work-area">
-              <div 
+              <div
                 className={`dropzone ${dragActive ? 'active' : ''} ${file ? 'has-file' : ''}`}
                 onDragEnter={handleDrag}
                 onDragOver={handleDrag}
@@ -362,7 +563,7 @@ function ImageUploaderModal({ isOpen, onClose, supabase, targetProblemTitle, onI
                 </div>
               )}
 
-              <button 
+              <button
                 className="uploader-action-btn"
                 disabled={!file || uploading}
                 onClick={executeUpload}
@@ -386,7 +587,7 @@ function ImageUploaderModal({ isOpen, onClose, supabase, targetProblemTitle, onI
                 <Check size={28} />
               </div>
               <h4>Image Uploaded Successfully!</h4>
-              
+
               <div className="success-preview-container">
                 <img src={uploadedUrl} alt="Uploaded success" className="uploader-success-img" />
               </div>
@@ -403,7 +604,7 @@ function ImageUploaderModal({ isOpen, onClose, supabase, targetProblemTitle, onI
 
               <div className="uploader-success-actions">
                 {onInsertLink && targetProblemTitle !== null && (
-                  <button 
+                  <button
                     className="uploader-insert-btn"
                     onClick={() => {
                       onInsertLink(uploadedUrl);
@@ -413,8 +614,8 @@ function ImageUploaderModal({ isOpen, onClose, supabase, targetProblemTitle, onI
                     Insert Link into "{targetProblemTitle}"
                   </button>
                 )}
-                
-                <button 
+
+                <button
                   className="uploader-reset-btn"
                   onClick={() => {
                     setFile(null);
@@ -432,6 +633,225 @@ function ImageUploaderModal({ isOpen, onClose, supabase, targetProblemTitle, onI
     </div>
   );
 }
+
+const COURSES = [
+  {
+    id: 'c',
+    name: 'C Programming',
+    icon: 'Terminal',
+    description: 'Foundations of procedural programming, memory pointers, structures, recursion, and file system mechanics.',
+    difficulty: 'Beginner',
+    moduleCount: '11 Labs',
+    problemCount: '50+ Problems',
+    status: 'active',
+    brandClass: 'course-card-c',
+    categories: ['Core Systems', 'All'],
+    estimatedHours: '20 Hours',
+    progress: 100,
+    helloWorldCode: `#include <stdio.h>\n\nint main() {\n    // Procedural C execution\n    printf("Hello, C-Lab Portal!\\n");\n    return 0;\n}`,
+    prerequisites: ['Basic logical thinking', 'No prior coding experience needed'],
+    learningOutcomes: [
+      'Understand compiled binaries & execution flow',
+      'Manage computer memory directly using pointer arithmetic',
+      'Handle strings and multi-dimensional matrices',
+      'Read and write persistent files safely'
+    ],
+    interviewTopics: ['Pointers & Addresses', 'Pass by Reference vs Value', 'Recursion Stack Overflow', 'Struct Memory Padding'],
+    syllabus: [
+      { num: 1, title: 'Basics of C & Arithmetic', topics: ['Variable types', 'Format specifiers', 'Type conversions', 'printf/scanf'] },
+      { num: 2, title: 'Control Flow & Logic', topics: ['Conditional structures', 'Logical operations', 'Nested if-else', 'Switch cases'] },
+      { num: 3, title: 'Loops & Iterations', topics: ['while loops', 'for loops', 'do-while loops', 'Break & Continue statements'] },
+      { num: 4, title: 'Arrays & Memory Blocks', topics: ['1D Array manipulation', 'Searching algorithms', 'Bubble/Selection/Insertion sorting'] },
+      { num: 5, title: 'Matrices & String Buffers', topics: ['Matrix calculations', 'String functions', 'ASCII table mapping', 'Vowels count'] },
+      { num: 6, title: 'Functions & Scope', topics: ['Function declaration', 'Parameters passing', 'Local vs global scopes'] },
+      { num: 7, title: 'Numerical Calculations', topics: ['Newton-Raphson root finding', 'Numerical differentiation', 'Numerical integration'] },
+      { num: 8, title: 'Recursive Call Stacks', topics: ['Recursive functions', 'Stack frame allocation', 'Fibonacci sequence'] },
+      { num: 9, title: 'Pointers & Dynamic Storage', topics: ['Swapping using pointers', 'Array pointers passing', 'Dynamic memory allocation'] },
+      { num: 10, title: 'Structures & Data Records', topics: ['Struct definitions', 'Employee/Student records data structures'] },
+      { num: 11, title: 'File Operations & I/O', topics: ['fopen/fclose file descriptors', 'File copying', 'Case transformation', 'File size check'] }
+    ]
+  },
+  {
+    id: 'cpp',
+    name: 'Object-Oriented C++',
+    icon: 'Cpu',
+    description: 'Master classes, object models, inheritance trees, virtual polymorphism, templates, and the Standard Template Library (STL).',
+    difficulty: 'Intermediate',
+    moduleCount: '10 Labs',
+    problemCount: '40+ Problems',
+    status: 'preview',
+    brandClass: 'course-card-cpp',
+    categories: ['Core Systems', 'Enterprise & OOPs', 'All'],
+    estimatedHours: '25 Hours',
+    progress: 45,
+    helloWorldCode: `#include <iostream>\nusing namespace std;\n\nclass Developer {\nprivate:\n    string name;\npublic:\n    Developer(string n) : name(n) {}\n    void code() {\n        cout << name << " codes in C++!\\n";\n    }\n};\n\nint main() {\n    Developer dev("Piyush");\n    dev.code();\n    return 0;\n}`,
+    prerequisites: ['Basic C programming', 'Variable scopes understanding'],
+    learningOutcomes: [
+      'Design software components using Class & Objects structure',
+      'Optimize code reusability using Multiple & Virtual Inheritance',
+      'Implement polymorphism for runtime method dispatch',
+      'Utilize generic programming via templates & STL'
+    ],
+    interviewTopics: ['Virtual Destructors', 'Diamond Problem in Inheritance', 'VTABLE and VPTR mechanics', 'RAII & Smart Pointers'],
+    syllabus: [
+      { num: 1, title: 'Classes and Objects', topics: ['Data encapsulation', 'Access specifiers', 'Object instantiation'] },
+      { num: 2, title: 'Constructors & Destructors', topics: ['Default constructors', 'Parameterized constructors', 'Copy constructors', 'Memory deallocation'] },
+      { num: 3, title: 'Operator Overloading', topics: ['Unary & Binary operators', 'Friend functions', 'Stream extraction/insertion'] },
+      { num: 4, title: 'Inheritance Schemes', topics: ['Single inheritance', 'Multilevel inheritance', 'Multiple inheritance', 'Protected access'] },
+      { num: 5, title: 'Polymorphism & Virtuals', topics: ['Function overriding', 'Virtual methods', 'Abstract base classes', 'Pure virtual interfaces'] },
+      { num: 6, title: 'Templates & Generics', topics: ['Function templates', 'Class templates', 'Specializations'] },
+      { num: 7, title: 'Standard Template Library', topics: ['Vectors, Lists, Deques', 'Maps, Sets, Unordered maps', 'Algorithms (sort, search)'] },
+      { num: 8, title: 'Exception Handlers', topics: ['try-catch statements', 'Custom exceptions', 'Stack unwinding'] },
+      { num: 9, title: 'File Streams & I/O', topics: ['ifstream and ofstream', 'Binary file serialization', 'State flags'] },
+      { num: 10, title: 'Modern C++ Concepts', topics: ['Smart pointers', 'Lambda expressions', 'Move semantics', 'Rvalue references'] }
+    ]
+  },
+  {
+    id: 'python',
+    name: 'Python Programming',
+    icon: 'Flame',
+    description: 'Learn script-writing, dynamic data structures, list comprehensions, functional programming, file APIs, and AI/Data Science libraries.',
+    difficulty: 'Beginner',
+    moduleCount: '12 Labs',
+    problemCount: '60+ Problems',
+    status: 'coming_soon',
+    brandClass: 'course-card-python',
+    categories: ['Scripting & Data', 'All'],
+    estimatedHours: '15 Hours',
+    progress: 0,
+    helloWorldCode: `def greet_developer(name: str) -> None:\n    # Python Dynamic Scripting\n    message = f"Welcome back, {name}! Ready to code?"\n    print(message)\n\nif __name__ == "__main__":\n    greet_developer("Admin")`,
+    prerequisites: ['No prior programming background needed'],
+    learningOutcomes: [
+      'Write clean, readable PEP 8 style Python scripts',
+      'Use fast comprehensions and generator functions',
+      'Read, process, and analyze CSV/JSON datasets',
+      'Build basic automation scripts & fetch APIs'
+    ],
+    interviewTopics: ['Python GIL (Global Interpreter Lock)', 'List vs Tuple Memory Allocation', 'Decorators & Generators', 'Mutable vs Immutable Default Args'],
+    syllabus: [
+      { num: 1, title: 'Python Syntax & Variables', topics: ['Dynamic typing', 'Basic I/O', 'Indentation rules'] },
+      { num: 2, title: 'Conditionals & Loop Control', topics: ['if-elif-else', 'for-in loop', 'while loops', 'range generator'] },
+      { num: 3, title: 'Built-in Collections', topics: ['List operations', 'Tuple immutability', 'Set operations', 'Dictionary lookups'] },
+      { num: 4, title: 'Functions & Scoping', topics: ['def statement', 'Arbitrary arguments (*args, **kwargs)', 'Lambda expressions'] },
+      { num: 5, title: 'Modules & Libraries', topics: ['import syntax', 'pip package manager', 'Standard library math/random/datetime'] },
+      { num: 6, title: 'File Streams & Formatting', topics: ['with open syntax', 'JSON serialization', 'CSV data reading'] },
+      { num: 7, title: 'Object Oriented Python', topics: ['self variable', 'init constructor', 'Methods overriding', 'Properties decorators'] },
+      { num: 8, title: 'Error Handlers & Debug', topics: ['try-except-finally', 'Raising exceptions', 'Custom exceptions'] },
+      { num: 9, title: 'Data Processing Basics', topics: ['NumPy array operations', 'Pandas DataFrame manipulation', 'Visualizations'] },
+      { num: 10, title: 'Network API Requests', topics: ['Requests library', 'JSON REST API consumption', 'Status codes'] },
+      { num: 11, title: 'Automation Scripts', topics: ['System subprocesses', 'Filesystem scanning', 'Regex operations'] },
+      { num: 12, title: 'Advanced Generators', topics: ['yield statement', 'Iterators protocols', 'Decorators writing'] }
+    ]
+  },
+  {
+    id: 'dsa',
+    name: 'Data Structures & Algorithms',
+    icon: 'GraduationCap',
+    description: 'Analyze time/space complexities, build linked structures, trees, dynamic hash tables, sorting routines, and dynamic solutions.',
+    difficulty: 'Advanced',
+    moduleCount: '15 Labs',
+    problemCount: '80+ Problems',
+    status: 'coming_soon',
+    brandClass: 'course-card-dsa',
+    categories: ['Core Systems', 'All'],
+    estimatedHours: '40 Hours',
+    progress: 0,
+    helloWorldCode: `#include <iostream>\n\n// Singly Linked List node\nstruct Node {\n    int data;\n    Node* next;\n    Node(int val) : data(val), next(nullptr) {}\n};\n\nint main() {\n    Node* head = new Node(10);\n    std::cout << "Node created with value " << head->data << "\\n";\n    return 0;\n}`,
+    prerequisites: ['C/C++ basics', 'Pointers logic understanding'],
+    learningOutcomes: [
+      'Measure time & space complexity using Big-O metrics',
+      'Implement Dynamic Arrays, Lists, Stacks, & Queues from scratch',
+      'Perform quick tree traversals and balanced graph searches',
+      'Solve recursive patterns using Dynamic Programming'
+    ],
+    interviewTopics: ['Time/Space tradeoffs', 'Array vs Linked List search cost', 'BST balancing & AVL rotations', 'Memoization vs Tabulation'],
+    syllabus: [
+      { num: 1, title: 'Algorithmic Complexity', topics: ['Big-O notation', 'Time complexity analysis', 'Space complexity metrics'] },
+      { num: 2, title: 'Array Sequences', topics: ['Dynamic resizing', 'Subarray windows', 'Two-pointer methods'] },
+      { num: 3, title: 'Linked Lists Structures', topics: ['Singly linked nodes', 'Doubly linked lists', 'Circular buffers'] },
+      { num: 4, title: 'Stack & Queue ADTs', topics: ['Stack LIFO queue', 'Queue FIFO structure', 'Deconstruct recursion'] },
+      { num: 5, title: 'Recursion Backtrack', topics: ['Base conditions', 'Call-stack visualizer', 'N-Queens solver'] },
+      { num: 6, title: 'Advanced Sorting', topics: ['QuickSort partitions', 'MergeSort divide-and-conquer', 'HeapSort heapify'] },
+      { num: 7, title: 'Hash Map Tables', topics: ['Hash functions', 'Collision resolutions', 'Load factor balance'] },
+      { num: 8, title: 'Binary Tree Nodes', topics: ['Pre/In/Post order traversals', 'Binary Search Tree searches', 'DFS & BFS'] },
+      { num: 9, title: 'Self-Balancing Trees', topics: ['AVL self-rotation', 'Red-Black tree properties'] },
+      { num: 10, title: 'Priority Queues & Heaps', topics: ['Max-Heap/Min-Heap arrays', 'Heapify sorting details'] },
+      { num: 11, title: 'Graph Foundations', topics: ['Adjacency list representations', 'DFS traversal stack', 'BFS traversal queue'] },
+      { num: 12, title: 'Shortest Path Graphs', topics: ['Dijkstra algorithm', 'Bellman-Ford checks'] },
+      { num: 13, title: 'Minimum Spanning Tree', topics: ['Kruskal disjoint sets', 'Prim key updates'] },
+      { num: 14, title: 'Greedy & Divide-Conquer', topics: ['Fractional knapsack', 'Binary search trees'] },
+      { num: 15, title: 'Dynamic Programming', topics: ['Fibonacci memoization', 'Knapsack solver', 'Longest Common Subsequence'] }
+    ]
+  },
+  {
+    id: 'java',
+    name: 'Java Development',
+    icon: 'Laptop',
+    description: 'Learn class hierarchies, Java Virtual Machine (JVM) compilation, exception architectures, multi-threading, and backend systems.',
+    difficulty: 'Intermediate',
+    moduleCount: '10 Labs',
+    problemCount: '35+ Problems',
+    status: 'coming_soon',
+    brandClass: 'course-card-java',
+    categories: ['Enterprise & OOPs', 'All'],
+    estimatedHours: '30 Hours',
+    progress: 0,
+    helloWorldCode: `public class Main {\n    public static void main(String[] args) {\n        // JVM Object Oriented execution\n        System.out.println("Hello, Java Portal!");\n    }\n}`,
+    prerequisites: ['Logical control structures (loops, branches)'],
+    learningOutcomes: [
+      'Compile and run bytecode on Java Virtual Machine (JVM)',
+      'Design clean architectures using Inheritance & Interfaces',
+      'Resolve exceptions gracefully using structured try-catch hierarchy',
+      'Write safe multi-threaded task worker pools'
+    ],
+    interviewTopics: ['JVM Memory: Heap vs Stack', 'Java Garbage Collection sweeps', 'Abstract Class vs Interface', 'Checked vs Unchecked Exceptions'],
+    syllabus: [
+      { num: 1, title: 'JVM Architecture', topics: ['Bytecode compilation', 'JVM JRE JDK difference', 'Data types'] },
+      { num: 2, title: 'OOP Foundations', topics: ['Class schemas', 'Access modifiers', 'this reference'] },
+      { num: 3, title: 'Inheritance & Abstract Classes', topics: ['super constructor', 'Method overriding', 'Abstract classes'] },
+      { num: 4, title: 'Interfaces & Polymorphism', topics: ['Multiple interfaces implement', 'Default interface methods', 'Runtime binds'] },
+      { num: 5, title: 'Packages & Visibility', topics: ['Import statements', 'CLASSPATH variables', 'Access control scoping'] },
+      { num: 6, title: 'Exception Safety', topics: ['try-catch-finally block', 'throw vs throws keywords', 'Custom exception writing'] },
+      { num: 7, title: 'String APIs & Buffers', topics: ['String pool references', 'StringBuilder vs StringBuffer'] },
+      { num: 8, title: 'Java Collections Framework', topics: ['List ArrayList', 'Set HashSet', 'Map HashMap table lookup'] },
+      { num: 9, title: 'Threads & Concurrency', topics: ['Runnable implementation', 'synchronized block locks', 'Thread life cycle states'] },
+      { num: 10, title: 'File Streams & NIO', topics: ['File streams I/O', 'Reader and Writer objects', 'NIO modern path operations'] }
+    ]
+  },
+  {
+    id: 'sql',
+    name: 'SQL & Database Design',
+    icon: 'Database',
+    description: 'Master relational schema designs, tables normalization, query syntax, aggregations, database joins, and performance indexing.',
+    difficulty: 'Intermediate',
+    moduleCount: '8 Labs',
+    problemCount: '30+ Problems',
+    status: 'coming_soon',
+    brandClass: 'course-card-sql',
+    categories: ['Scripting & Data', 'All'],
+    estimatedHours: '12 Hours',
+    progress: 0,
+    helloWorldCode: `-- SQL Relational Query\nSELECT student_name, score\nFROM lab_records\nWHERE language = 'C'\n  AND score >= 90\nORDER BY score DESC;`,
+    prerequisites: ['Basic set logic', 'Elementary tabular structures'],
+    learningOutcomes: [
+      'Draft normalized Relational Schemas (1NF, 2NF, 3NF)',
+      'Query databases using conditional filters and sorted arrays',
+      'Join multiple relation tables using INNER/LEFT/RIGHT syntax',
+      'Speed up query processing using indexes and partitions'
+    ],
+    interviewTopics: ['SQL Joins: Inner vs Left Outer', 'Normal Forms benefits', 'Index lookup trees (B-Trees)', 'ACID Transactions safety'],
+    syllabus: [
+      { num: 1, title: 'Relational Model Basics', topics: ['Tables, Columns, Primary keys', 'Foreign key references'] },
+      { num: 2, title: 'Basic SQL Query SELECT', topics: ['WHERE conditional matches', 'ORDER BY sorting', 'LIMIT partitions'] },
+      { num: 3, title: 'Aggregations & Groupings', topics: ['SUM, AVG, COUNT, MIN, MAX', 'GROUP BY groupings', 'HAVING filter states'] },
+      { num: 4, title: 'SQL Joins Mechanics', topics: ['INNER JOIN match', 'LEFT JOIN outer match', 'RIGHT JOIN outer match', 'CROSS JOIN product'] },
+      { num: 5, title: 'Subqueries & Views', topics: ['Subquery filters', 'CTE Common Table Expressions', 'CREATE VIEW mapping'] },
+      { num: 6, title: 'Data Mutator DML Statements', topics: ['INSERT statements', 'UPDATE queries', 'DELETE statements'] },
+      { num: 7, title: 'Schema Definition DDL', topics: ['CREATE TABLE schemas', 'ALTER COLUMN definitions', 'DROP elements'] },
+      { num: 8, title: 'Indexing & Performance', topics: ['Indexes execution plan', 'Query cost analysis', 'Transaction locks'] }
+    ]
+  }
+];
 
 function App() {
   // Config States (Persistent or default fallback)
@@ -485,32 +905,32 @@ function App() {
       if (!supabase) return;
       try {
         setDbLoading(true);
-        
+
         // Fetch labs
         const { data: labsFromDb, error: labsErr } = await supabase
           .from('labs')
           .select('*')
           .order('labNum', { ascending: true });
-        
+
         if (labsErr) throw labsErr;
 
         // Fetch theory
         const { data: theoryFromDb, error: theoryErr } = await supabase
           .from('theory')
           .select('*');
-        
+
         if (theoryErr) throw theoryErr;
 
         // Fetch quizzes
         const { data: quizzesFromDb, error: quizzesErr } = await supabase
           .from('quizzes')
           .select('*');
-          
+
         if (quizzesErr) throw quizzesErr;
 
         if (labsFromDb && labsFromDb.length > 0) {
           setLabs(labsFromDb);
-          
+
           const newTheory = {};
           if (theoryFromDb) {
             theoryFromDb.forEach(t => {
@@ -531,7 +951,7 @@ function App() {
             });
           }
           setQuizData(newQuizzes);
-          
+
           setAdminSelectedLabNum(labsFromDb[0].labNum);
         } else {
           console.log("Supabase database tables are empty. Pre-populating from local static files...");
@@ -542,7 +962,7 @@ function App() {
         setDbLoading(false);
       }
     }
-    
+
     loadDataFromSupabase();
   }, []);
 
@@ -556,11 +976,11 @@ function App() {
   const [selectedProblem, setSelectedProblem] = useState(null);
   const [expandedLabs, setExpandedLabs] = useState({ 2: true });
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Theme & Mobile layout
   const [isLightMode, setIsLightMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
+
   // Copy confirmation
   const [copied, setCopied] = useState(false);
 
@@ -581,13 +1001,31 @@ function App() {
     if (path === 'admin') return 'admin';
     if (path === 'revision') return 'revision';
     if (path === 'notes') return 'notes';
-    return 'workspace';
+    if (path === 'c' || path === 'workspace') return 'workspace';
+    return 'home';
   });
+
+  // New Landing Page States
+  const [landingSearchQuery, setLandingSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [syllabusModalOpen, setSyllabusModalOpen] = useState(false);
+  const [syllabusModalCourse, setSyllabusModalCourse] = useState(null);
+  const [activeCodePreview, setActiveCodePreview] = useState('c');
+  const [showNotifyToast, setShowNotifyToast] = useState(false);
+
+  // Testimonials slide index
+  const [activeTestimonialIndex, setActiveTestimonialIndex] = useState(0);
 
   // Sync viewMode to browser URL history
   useEffect(() => {
     const currentPath = window.location.pathname.replace(/^\/|\/$/g, '');
-    const targetPath = viewMode === 'workspace' ? '' : viewMode;
+    let targetPath = '';
+    if (viewMode === 'workspace') targetPath = 'c';
+    else if (viewMode === 'revision') targetPath = 'revision';
+    else if (viewMode === 'notes') targetPath = 'notes';
+    else if (viewMode === 'admin') targetPath = 'admin';
+    else targetPath = ''; // home is root
+
     if (currentPath !== targetPath) {
       window.history.pushState(null, '', `/${targetPath}`);
     }
@@ -600,13 +1038,58 @@ function App() {
       if (path === 'admin') setViewMode('admin');
       else if (path === 'revision') setViewMode('revision');
       else if (path === 'notes') setViewMode('notes');
-      else setViewMode('workspace');
+      else if (path === 'c' || path === 'workspace') setViewMode('workspace');
+      else setViewMode('home');
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   const [autoPlayNext, setAutoPlayNext] = useState(true);
+
+  // Landing Page Filter & Notify Logics
+  const filteredCourses = useMemo(() => {
+    const query = landingSearchQuery.toLowerCase().trim();
+    return COURSES.filter((course) => {
+      const matchesCategory = activeCategory === 'All' || course.categories.includes(activeCategory);
+      if (!query) return matchesCategory;
+      
+      const matchesName = course.name.toLowerCase().includes(query);
+      const matchesDesc = course.description.toLowerCase().includes(query);
+      const matchesSyllabus = course.syllabus.some((mod) => 
+        mod.title.toLowerCase().includes(query) || 
+        mod.topics.some(t => t.toLowerCase().includes(query))
+      );
+      
+      return matchesCategory && (matchesName || matchesDesc || matchesSyllabus);
+    });
+  }, [landingSearchQuery, activeCategory]);
+
+  const activeCodeCourse = useMemo(() => {
+    return COURSES.find(c => c.id === activeCodePreview) || COURSES[0];
+  }, [activeCodePreview]);
+
+  const triggerNotifyToast = () => {
+    setShowNotifyToast(true);
+    setTimeout(() => {
+      setShowNotifyToast(false);
+    }, 3000);
+  };
+
+  const testimonials = [
+    {
+      quote: "The C Programming workspace is a lifesaver. Watching step-by-step videos and reading high-quality diagrams got me an A in my lab exam!",
+      author: "Aryan K. (CS Sophomore)"
+    },
+    {
+      quote: "I love the code copy & download features. Highly visual, very clean, and structured. Can't wait for C++ and Python courses to go live!",
+      author: "Sneha M. (ECE Junior)"
+    },
+    {
+      quote: "The RLS policies, clean segmented controls, and overall aesthetic make this feel like a premium dev dashboard. Best academic portal ever!",
+      author: "Devanshu S. (Admin User)"
+    }
+  ];
 
   // Image Uploader Modal States
   const [isImageUploaderOpen, setIsImageUploaderOpen] = useState(false);
@@ -744,7 +1227,7 @@ function App() {
     const targetIdx = probIndex + direction;
     const currentLab = labs.find(l => l.labNum === adminSelectedLabNum);
     if (!currentLab || targetIdx < 0 || targetIdx >= currentLab.problems.length) return;
-    
+
     const updatedLabs = labs.map(lab => {
       if (lab.labNum === adminSelectedLabNum) {
         const problems = [...lab.problems];
@@ -816,7 +1299,7 @@ function App() {
     setTheory(updatedTheory);
     localStorage.setItem('c_lab_theory', JSON.stringify(updatedTheory));
   };
-  
+
   const handleAddTheoryKeyPoint = () => {
     const keyPoints = [...(theory[adminSelectedLabNum]?.keyPoints || []), "New Key Point"];
     const updatedTheory = {
@@ -829,7 +1312,7 @@ function App() {
     setTheory(updatedTheory);
     localStorage.setItem('c_lab_theory', JSON.stringify(updatedTheory));
   };
-  
+
   const handleDeleteTheoryKeyPoint = (kpIndex) => {
     const keyPoints = (theory[adminSelectedLabNum]?.keyPoints || []).filter((_, idx) => idx !== kpIndex);
     const updatedTheory = {
@@ -858,7 +1341,7 @@ function App() {
     setQuizData(updatedQuizzes);
     localStorage.setItem('c_lab_quizzes', JSON.stringify(updatedQuizzes));
   };
-  
+
   const handleDeleteQuizQuestion = (qIdx) => {
     if (!window.confirm("Are you sure you want to delete this quiz question?")) return;
     const labQuizzes = (quizData[adminSelectedLabNum] || []).filter((_, idx) => idx !== qIdx);
@@ -869,7 +1352,7 @@ function App() {
     setQuizData(updatedQuizzes);
     localStorage.setItem('c_lab_quizzes', JSON.stringify(updatedQuizzes));
   };
-  
+
   const handleUpdateQuizField = (qIdx, field, value) => {
     const labQuizzes = [...(quizData[adminSelectedLabNum] || [])];
     labQuizzes[qIdx] = {
@@ -883,7 +1366,7 @@ function App() {
     setQuizData(updatedQuizzes);
     localStorage.setItem('c_lab_quizzes', JSON.stringify(updatedQuizzes));
   };
-  
+
   const handleUpdateQuizOption = (qIdx, optIdx, value) => {
     const labQuizzes = [...(quizData[adminSelectedLabNum] || [])];
     const options = [...(labQuizzes[qIdx].options || [])];
@@ -905,28 +1388,28 @@ function App() {
       alert("Supabase client is not initialized. Please verify your environment variables.");
       return;
     }
-    
+
     setSaveStatus("Saving changes to Supabase database...");
     try {
       const activeLabNums = labs.map(l => l.labNum);
-      
+
       // Delete any labs in Supabase that are no longer in our local state
       if (activeLabNums.length > 0) {
         const { error: delLabsErr } = await supabase.from('labs').delete().not('labNum', 'in', `(${activeLabNums.join(',')})`);
         if (delLabsErr) throw delLabsErr;
-        
+
         const { error: delTheoryErr } = await supabase.from('theory').delete().not('labNum', 'in', `(${activeLabNums.join(',')})`);
         if (delTheoryErr) throw delTheoryErr;
-        
+
         const { error: delQuizErr } = await supabase.from('quizzes').delete().not('labNum', 'in', `(${activeLabNums.join(',')})`);
         if (delQuizErr) throw delQuizErr;
       } else {
         const { error: delLabsErr } = await supabase.from('labs').delete().neq('labNum', -1);
         if (delLabsErr) throw delLabsErr;
-        
+
         const { error: delTheoryErr } = await supabase.from('theory').delete().neq('labNum', -1);
         if (delTheoryErr) throw delTheoryErr;
-        
+
         const { error: delQuizErr } = await supabase.from('quizzes').delete().neq('labNum', -1);
         if (delQuizErr) throw delQuizErr;
       }
@@ -1021,11 +1504,11 @@ function App() {
     localStorage.removeItem('c_lab_labs');
     localStorage.removeItem('c_lab_theory');
     localStorage.removeItem('c_lab_quizzes');
-    
+
     setLabs(labsData);
     setTheory(theoryNotes);
     setQuizData(quizzes);
-    
+
     setAdminSelectedLabNum(labsData[0]?.labNum || null);
     alert("Reset successful! Default configurations restored.");
   };
@@ -1127,12 +1610,12 @@ function App() {
         events: {
           onReady: (event) => {
             setIsPlayerReady(true);
-            
+
             // Re-apply saved speed rate to the new video player
             if (playbackSpeedRef.current !== 1) {
               event.target.setPlaybackRate(playbackSpeedRef.current);
             }
-            
+
             // Re-apply saved mute state
             if (isMutedRef.current) {
               event.target.mute();
@@ -1360,14 +1843,14 @@ function App() {
 
   // Search filtering
   const filteredLabs = labs.map(lab => {
-    const matchesLab = lab.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                       lab.tutorial.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchedProblems = lab.problems.filter(p => 
-      p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const matchesLab = lab.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lab.tutorial.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchedProblems = lab.problems.filter(p =>
+      p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.code.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    
+
     if (matchesLab || matchedProblems.length > 0) {
       return {
         ...lab,
@@ -1447,9 +1930,9 @@ function App() {
           <div className="sidebar-search">
             <div className="search-input-wrapper">
               <Search size={16} />
-              <input 
-                type="text" 
-                placeholder="Search labs, problems, codes..." 
+              <input
+                type="text"
+                placeholder="Search labs, problems, codes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="search-input"
@@ -1467,10 +1950,10 @@ function App() {
               filteredLabs.map((lab) => {
                 const isExpanded = !!expandedLabs[lab.labNum];
                 const isSelected = selectedLab?.labNum === lab.labNum;
-                
+
                 return (
                   <div key={lab.labNum} className={`lab-group ${isSelected ? 'active' : ''}`}>
-                    <button 
+                    <button
                       onClick={() => {
                         toggleLabExpand(lab.labNum);
                         handleSelectLab(lab);
@@ -1483,7 +1966,7 @@ function App() {
                       </div>
                       {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                     </button>
-                    
+
                     {isExpanded && (
                       <div className="problems-list">
                         {lab.problems.map((prob) => {
@@ -1511,7 +1994,7 @@ function App() {
 
       {/* Main Content Pane */}
       <main className="main-wrapper">
-        
+
         {/* Top Header */}
         <header className="topbar">
           <div className="topbar-left">
@@ -1521,7 +2004,9 @@ function App() {
               </button>
             )}
             <div className="topbar-title">
-              {viewMode === 'revision' ? (
+              {viewMode === 'home' ? (
+                <span>Multi-Language Learning Hub</span>
+              ) : viewMode === 'revision' ? (
                 <span>Exam Video Revision</span>
               ) : viewMode === 'notes' ? (
                 <span>Exam Notes Revision</span>
@@ -1534,10 +2019,18 @@ function App() {
               )}
             </div>
           </div>
-          
+
           <div className="topbar-right">
             <div className="viewmode-segmented-control">
-              <button 
+              <button
+                className={`segmented-btn ${viewMode === 'home' ? 'active' : ''}`}
+                onClick={() => setViewMode('home')}
+                title="Home Dashboard"
+              >
+                <Home size={14} />
+                <span>Home</span>
+              </button>
+              <button
                 className={`segmented-btn ${viewMode === 'workspace' ? 'active' : ''}`}
                 onClick={() => setViewMode('workspace')}
                 title="Code Workspace"
@@ -1545,7 +2038,7 @@ function App() {
                 <Terminal size={14} />
                 <span>Workspace</span>
               </button>
-              <button 
+              <button
                 className={`segmented-btn ${viewMode === 'revision' ? 'active' : ''}`}
                 onClick={() => setViewMode('revision')}
                 title="Exam Video Playlist"
@@ -1553,7 +2046,7 @@ function App() {
                 <Tv size={14} />
                 <span>Video Revision</span>
               </button>
-              <button 
+              <button
                 className={`segmented-btn ${viewMode === 'notes' ? 'active' : ''}`}
                 onClick={() => setViewMode('notes')}
                 title="Concept Notes Playlist"
@@ -1561,7 +2054,7 @@ function App() {
                 <BookOpen size={14} />
                 <span>Notes Revision</span>
               </button>
-              <button 
+              <button
                 className={`segmented-btn ${viewMode === 'admin' ? 'active' : ''}`}
                 onClick={() => setViewMode('admin')}
                 title="Admin Control Panel"
@@ -1577,7 +2070,342 @@ function App() {
         </header>
 
         {/* Workspace Display or Revision Playlist Display or Notes Revision Display */}
-        {viewMode === 'revision' ? (
+        {viewMode === 'home' ? (
+          <div className="landing-container">
+            {/* 1. Animated Hero Section */}
+            <section className="landing-hero reveal-on-scroll revealed">
+              <div className="landing-hero-overlay"></div>
+              <div className="hero-tag">
+                <Sparkles size={14} />
+                <span>Academic Developer Hub</span>
+              </div>
+              <h1>Master Programming, One Lab at a Time</h1>
+              <p>
+                Choose a course below to explore interactive code workspaces, step-by-step revision videos, visual concept notes, and test preparation viva summaries.
+              </p>
+              
+              {/* Quick Search */}
+              <div className="hero-search-wrapper">
+                <div className="hero-search-bar">
+                  <Search size={18} />
+                  <input
+                    id="landing-search"
+                    type="text"
+                    className="hero-search-input"
+                    placeholder="Search courses, modules, or key concepts..."
+                    value={landingSearchQuery}
+                    onChange={(e) => setLandingSearchQuery(e.target.value)}
+                  />
+                  <span className="search-shortcut-badge">Ctrl + K</span>
+                </div>
+              </div>
+
+              {/* Stats Counters */}
+              <div className="hero-stats-strip">
+                <div className="hero-stat-box">
+                  <span className="hero-stat-num">6</span>
+                  <span className="hero-stat-lbl">Languages</span>
+                </div>
+                <div className="hero-stat-box">
+                  <span className="hero-stat-num">50+</span>
+                  <span className="hero-stat-lbl">Solutions</span>
+                </div>
+                <div className="hero-stat-box">
+                  <span className="hero-stat-num">11</span>
+                  <span className="hero-stat-lbl">C-Lab Modules</span>
+                </div>
+                <div className="hero-stat-box">
+                  <span className="hero-stat-num">100%</span>
+                  <span className="hero-stat-lbl">Open Source</span>
+                </div>
+              </div>
+            </section>
+
+            {/* 2. Interactive Code Previewer Section */}
+            <section className="reveal-on-scroll">
+              <h3 className="previewer-section-title">
+                <Code size={20} className="text-highlight" />
+                <span>Interactive Code Preview</span>
+              </h3>
+              <div className="code-previewer-panel">
+                <div className="previewer-selector-list">
+                  {COURSES.map((course) => (
+                    <button
+                      key={course.id}
+                      type="button"
+                      className={`previewer-selector-card ${activeCodePreview === course.id ? 'active' : ''}`}
+                      onMouseEnter={() => setActiveCodePreview(course.id)}
+                      onClick={() => setActiveCodePreview(course.id)}
+                    >
+                      <div className="previewer-selector-info">
+                        <div className="lang-preview-icon">
+                          {getCourseIcon(course.icon, 18)}
+                        </div>
+                        <div className="previewer-selector-details">
+                          <h4>{course.name}</h4>
+                          <span>{course.difficulty} &bull; {course.moduleCount}</span>
+                        </div>
+                      </div>
+                      <ChevronRight size={16} className="previewer-arrow" />
+                    </button>
+                  ))}
+                </div>
+
+                <div className="previewer-editor-mock">
+                  <div className="editor-mock-header">
+                    <div className="editor-window-dots">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                    <div className="editor-mock-tab">
+                      {getCourseIcon(activeCodeCourse.icon, 13)}
+                      <span>
+                        {activeCodeCourse.id === 'c' ? 'main.c' : 
+                         activeCodeCourse.id === 'cpp' ? 'Developer.cpp' : 
+                         activeCodeCourse.id === 'python' ? 'script.py' : 
+                         activeCodeCourse.id === 'java' ? 'Main.java' : 
+                         activeCodeCourse.id === 'dsa' ? 'linked_list.cpp' : 'query.sql'}
+                      </span>
+                    </div>
+                    <span className="search-shortcut-badge" style={{ textTransform: 'uppercase' }}>
+                      {activeCodeCourse.id}
+                    </span>
+                  </div>
+                  <div className="editor-mock-body">
+                    <pre dangerouslySetInnerHTML={{ __html: highlightCode(activeCodeCourse.helloWorldCode, activeCodeCourse.id) }} />
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* 3. Course Grid with Category Filters */}
+            <section className="reveal-on-scroll" style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+              <div className="landing-filters-row">
+                <div className="category-tabs-container">
+                  {['All', 'Core Systems', 'Scripting & Data', 'Enterprise & OOPs'].map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      className={`cat-tab-btn ${activeCategory === cat ? 'active' : ''}`}
+                      onClick={() => setActiveCategory(cat)}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+                <span className="active-count-badge">
+                  Showing {filteredCourses.length} of {COURSES.length} Courses
+                </span>
+              </div>
+
+              {filteredCourses.length === 0 ? (
+                <div className="search-empty-state">
+                  <Info size={40} />
+                  <h3>No courses match your search query</h3>
+                  <p>Try searching for keywords like "pointers", "sorting", "inheritance", or select another category filter.</p>
+                </div>
+              ) : (
+                <div className="course-cards-grid">
+                  {filteredCourses.map((course) => {
+                    const isC = course.id === 'c';
+                    return (
+                      <div key={course.id} className={`course-card ${course.brandClass}`}>
+                        <div className="course-card-header">
+                          <div className="course-card-icon">
+                            {getCourseIcon(course.icon, 22)}
+                          </div>
+                          {course.status === 'active' && (
+                            <span className="course-status-badge active">
+                              <span className="badge-pulse-dot"></span>
+                              <span>Active</span>
+                            </span>
+                          )}
+                          {course.status === 'preview' && (
+                            <span className="course-status-badge preview">Preview</span>
+                          )}
+                          {course.status === 'coming_soon' && (
+                            <span className="course-status-badge coming_soon">Coming Soon</span>
+                          )}
+                        </div>
+
+                        <div>
+                          <h3 className="course-card-title">{course.name}</h3>
+                          <p className="course-card-desc">{course.description}</p>
+                        </div>
+
+                        <div className="course-meta-pills">
+                          <span className="meta-pill">{course.difficulty}</span>
+                          <span className="meta-pill">{course.moduleCount}</span>
+                          <span className="meta-pill">{course.estimatedHours}</span>
+                        </div>
+
+                        {/* Progress */}
+                        <div className="course-card-progress">
+                          <div className="course-progress-header">
+                            <span>Syllabus Progress</span>
+                            <span>{course.progress}%</span>
+                          </div>
+                          <div className="course-progress-track">
+                            <div className="course-progress-fill" style={{ width: `${course.progress}%` }}></div>
+                          </div>
+                        </div>
+
+                        <div className="course-card-footer">
+                          {isC ? (
+                            <button
+                              type="button"
+                              className="course-cta-btn primary-cta"
+                              onClick={() => setViewMode('workspace')}
+                            >
+                              <Play size={14} />
+                              <span>Enter Workspace</span>
+                            </button>
+                          ) : course.status === 'preview' ? (
+                            <button
+                              type="button"
+                              className="course-cta-btn secondary-cta"
+                              onClick={() => {
+                                setSyllabusModalCourse(course);
+                                setSyllabusModalOpen(true);
+                              }}
+                            >
+                              <BookOpen size={14} />
+                              <span>Explore Syllabus</span>
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              className="course-cta-btn disabled-cta"
+                              onClick={() => {
+                                setSyllabusModalCourse(course);
+                                setSyllabusModalOpen(true);
+                              }}
+                            >
+                              <Info size={14} />
+                              <span>Syllabus Outline</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+
+            {/* 4. Features Showcase Grid */}
+            <section className="features-section reveal-on-scroll">
+              <h2>Centralized Visual Learning Core</h2>
+              <div className="features-grid">
+                <div className="feature-card">
+                  <div className="feature-icon-wrapper">
+                    <Terminal size={20} />
+                  </div>
+                  <h3>Live Workspace</h3>
+                  <p>Compile, edit, run, and save your code scripts with zero setup configuration overhead.</p>
+                </div>
+                <div className="feature-card">
+                  <div className="feature-icon-wrapper">
+                    <Tv size={20} />
+                  </div>
+                  <h3>Video Solutions</h3>
+                  <p>Step-by-step solution recordings describing logic walkthroughs for every laboratory program.</p>
+                </div>
+                <div className="feature-card">
+                  <div className="feature-icon-wrapper">
+                    <BookOpen size={20} />
+                  </div>
+                  <h3>Concept Notes</h3>
+                  <p>Handwritten visual flowcharts, execution stack diagrams, and clear theory explanations.</p>
+                </div>
+                <div className="feature-card">
+                  <div className="feature-icon-wrapper">
+                    <Trophy size={20} />
+                  </div>
+                  <h3>Viva Prep</h3>
+                  <p>Commonly asked lab exam questions, dynamic quiz systems, and logic testing tools.</p>
+                </div>
+              </div>
+            </section>
+
+            {/* 5. Quick-Start Wizard Strip */}
+            <section className="start-wizard-section reveal-on-scroll">
+              <h2>Interactive Quick-Start Guide</h2>
+              <div className="wizard-row">
+                <div className="wizard-step">
+                  <div className="wizard-number-circle">1</div>
+                  <h4>Choose Language</h4>
+                  <p>Select any active programming card from the course registry grid above.</p>
+                </div>
+                <div className="wizard-step">
+                  <div className="wizard-number-circle">2</div>
+                  <h4>Open Workspace</h4>
+                  <p>Examine problem lists, download files, and watch walkthrough playlists.</p>
+                </div>
+                <div className="wizard-step">
+                  <div className="wizard-number-circle">3</div>
+                  <h4>Complete Viva</h4>
+                  <p>Study visual diagrams and take practice quizzes to test concept retention.</p>
+                </div>
+              </div>
+            </section>
+
+            {/* 6. Rotating Student Testimonials Section */}
+            <section className="testimonials-section reveal-on-scroll">
+              <h2>What Developers Say</h2>
+              <div className="testimonials-wrapper">
+                <div className="testimonial-slide" key={activeTestimonialIndex}>
+                  <div className="testimonial-stars">
+                    <Star size={16} fill="currentColor" />
+                    <Star size={16} fill="currentColor" />
+                    <Star size={16} fill="currentColor" />
+                    <Star size={16} fill="currentColor" />
+                    <Star size={16} fill="currentColor" />
+                  </div>
+                  <p className="testimonial-quote">
+                    "{testimonials[activeTestimonialIndex].quote}"
+                  </p>
+                  <span className="testimonial-author">
+                    - {testimonials[activeTestimonialIndex].author}
+                  </span>
+                </div>
+                <div className="testimonials-indicators">
+                  {testimonials.map((_, idx) => (
+                    <span
+                      key={idx}
+                      className={`indicator-dot ${activeTestimonialIndex === idx ? 'active' : ''}`}
+                      onClick={() => setActiveTestimonialIndex(idx)}
+                    ></span>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* 7. Footer Section */}
+            <footer className="landing-footer reveal-on-scroll">
+              <div className="footer-logo">
+                <Terminal size={22} className="text-highlight" />
+                <span>DevLabs Academy Portal</span>
+              </div>
+              <div className="footer-links">
+                <button type="button" className="footer-link-btn" onClick={() => setViewMode('home')}>Home</button>
+                <button type="button" className="footer-link-btn" onClick={() => setViewMode('workspace')}>C Workspace</button>
+                <button type="button" className="footer-link-btn" onClick={() => setViewMode('revision')}>Video Revision</button>
+                <button type="button" className="footer-link-btn" onClick={() => setViewMode('notes')}>Notes Revision</button>
+                <button type="button" className="footer-link-btn" onClick={() => setViewMode('admin')}>Admin Panel</button>
+              </div>
+              <div className="footer-credit">
+                Built with &hearts; for developers &bull; &copy; {new Date().getFullYear()} Piyush Kumar
+              </div>
+              <div className="footer-tech-stack">
+                <span className="meta-pill">React</span>
+                <span className="meta-pill">Vite</span>
+                <span className="meta-pill">Supabase</span>
+              </div>
+            </footer>
+          </div>
+        ) : viewMode === 'revision' ? (
           <div className="revision-container">
             {/* Sidebar for Revision Mode */}
             <div className="playlist-sidebar">
@@ -1625,8 +2453,8 @@ function App() {
                       <h2>{selectedProblem.title}</h2>
                       <span className="filename-label">{selectedProblem.fileName}</span>
                     </div>
-                    <button 
-                      className="action-btn-sm btn-go-workspace" 
+                    <button
+                      className="action-btn-sm btn-go-workspace"
                       onClick={() => setViewMode('workspace')}
                     >
                       <span>Go to Code Workspace</span>
@@ -1640,7 +2468,7 @@ function App() {
                         <div className="video-frame-container">
                           <div id="yt-player"></div>
                         </div>
-                        
+
                         {/* Premium Custom Control Console */}
                         {isPlayerReady && (
                           <div className="video-custom-controls">
@@ -1649,11 +2477,11 @@ function App() {
                               <button onClick={() => handleSeek(-10)} className="control-btn" title="Rewind 10s">
                                 <Rewind size={16} />
                               </button>
-                              
+
                               <button onClick={handlePlayPause} className="control-btn play-pause-btn" title={isPlaying ? "Pause" : "Play"}>
                                 {isPlaying ? <Pause size={16} /> : <Play size={16} />}
                               </button>
-                              
+
                               <button onClick={() => handleSeek(10)} className="control-btn" title="Fast Forward 10s">
                                 <FastForward size={16} />
                               </button>
@@ -1704,10 +2532,10 @@ function App() {
                     </button>
 
                     <label className="autoplay-toggle">
-                      <input 
-                        type="checkbox" 
-                        checked={autoPlayNext} 
-                        onChange={(e) => setAutoPlayNext(e.target.checked)} 
+                      <input
+                        type="checkbox"
+                        checked={autoPlayNext}
+                        onChange={(e) => setAutoPlayNext(e.target.checked)}
                       />
                       <span className="autoplay-toggle-text">Autoplay Next Video</span>
                     </label>
@@ -1781,8 +2609,8 @@ function App() {
                           <span>Notes</span>
                         </button>
                       )}
-                      <button 
-                        className="action-btn-sm btn-go-workspace" 
+                      <button
+                        className="action-btn-sm btn-go-workspace"
                         onClick={() => setViewMode('workspace')}
                       >
                         <span>Go to Code Workspace</span>
@@ -1818,7 +2646,7 @@ function App() {
                           <p className="concept-summary">
                             {theory[selectedLab.labNum].summary}
                           </p>
-                          
+
                           <h4 className="section-title">Key Objectives</h4>
                           <ul className="objectives-list">
                             {theory[selectedLab.labNum].keyPoints?.map((pt, i) => (
@@ -1826,9 +2654,9 @@ function App() {
                             ))}
                           </ul>
 
-                          <div 
+                          <div
                             className="detailed-explanation"
-                            dangerouslySetInnerHTML={{ __html: theory[selectedLab.labNum].explanation || '' }} 
+                            dangerouslySetInnerHTML={{ __html: theory[selectedLab.labNum].explanation || '' }}
                           />
                         </div>
                       </div>
@@ -1871,371 +2699,371 @@ function App() {
               {/* Admin Sidebar - list of labs */}
               <aside className="admin-sidebar">
 
-              <div className="admin-sidebar-header">
-                <h3>Admin Console</h3>
-                <button className="admin-add-btn" onClick={handleAddLab} title="Add New Lab">
-                  <Plus size={16} />
-                  <span>Add Lab</span>
-                </button>
-              </div>
-              
-              <div className="admin-labs-list">
-                {labs.map((lab, index) => (
-                  <div 
-                    key={lab.labNum} 
-                    className={`admin-lab-item ${adminSelectedLabNum === lab.labNum ? 'active' : ''}`} 
-                    onClick={() => setAdminSelectedLabNum(lab.labNum)}
-                  >
-                    <div className="admin-lab-meta">
-                      <span className="admin-lab-num">Lab {lab.labNum}</span>
-                      <span className="admin-lab-title" title={lab.title}>{lab.title}</span>
-                    </div>
-                    <div className="admin-lab-actions" onClick={e => e.stopPropagation()}>
-                      <button className="admin-icon-btn" onClick={() => handleMoveLab(index, -1)} disabled={index === 0} title="Move Up">
-                        <ArrowUp size={12} />
-                      </button>
-                      <button className="admin-icon-btn" onClick={() => handleMoveLab(index, 1)} disabled={index === labs.length - 1} title="Move Down">
-                        <ArrowDown size={12} />
-                      </button>
-                      <button className="admin-icon-btn text-danger" onClick={() => handleDeleteLab(lab.labNum)} title="Delete Lab">
-                        <Trash2 size={12} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </aside>
-            
-            {/* Admin Main Area */}
-            <div className="admin-main">
-              {/* Top action bar for saving to codebase */}
-              <div className="admin-topbar">
-                <div className="admin-status">
-                  {saveStatus ? <span className="save-status-msg">{saveStatus}</span> : <span>Database connected. Click save to apply changes.</span>}
-                </div>
-                <div className="admin-global-actions">
-                  <button className="action-btn-sm btn-save-codebase" onClick={handleSaveToSupabase}>
-                    <Save size={14} />
-                    <span>Save to Database</span>
-                  </button>
-                  <button className="action-btn-sm" onClick={handleDownloadBackup}>
-                    <Download size={14} />
-                    <span>Download Backup</span>
-                  </button>
-                  <button className="action-btn-sm" onClick={() => { setUploaderTargetProblemIndex(null); setIsImageUploaderOpen(true); }}>
-                    <Image size={14} />
-                    <span>Image to Link</span>
-                  </button>
-                  <button className="action-btn-sm text-danger" onClick={handleResetDefaults}>
-                    <RotateCcw size={14} />
-                    <span>Reset Defaults</span>
-                  </button>
-                  <button className="action-btn-sm btn-sign-out" onClick={() => supabase.auth.signOut()}>
-                    <X size={14} />
-                    <span>Sign Out</span>
+                <div className="admin-sidebar-header">
+                  <h3>Admin Console</h3>
+                  <button className="admin-add-btn" onClick={handleAddLab} title="Add New Lab">
+                    <Plus size={16} />
+                    <span>Add Lab</span>
                   </button>
                 </div>
-              </div>
 
-              
-              {/* Selected Lab Editor */}
-              {selectedAdminLab ? (
-                <div className="admin-editor-card">
-                  {/* Lab-wide Edit Fields */}
-                  <div className="admin-section-card">
-                    <h3>Lab {selectedAdminLab.labNum} Details</h3>
-                    <div className="form-row-grid">
-                      <div className="form-group">
-                        <label>Lab Number</label>
-                        <input 
-                          type="number" 
-                          value={selectedAdminLab.labNum} 
-                          onChange={e => handleUpdateLabField('labNum', parseInt(e.target.value) || 0)} 
-                        />
+                <div className="admin-labs-list">
+                  {labs.map((lab, index) => (
+                    <div
+                      key={lab.labNum}
+                      className={`admin-lab-item ${adminSelectedLabNum === lab.labNum ? 'active' : ''}`}
+                      onClick={() => setAdminSelectedLabNum(lab.labNum)}
+                    >
+                      <div className="admin-lab-meta">
+                        <span className="admin-lab-num">Lab {lab.labNum}</span>
+                        <span className="admin-lab-title" title={lab.title}>{lab.title}</span>
                       </div>
-                      <div className="form-group">
-                        <label>Tutorial Tag</label>
-                        <input 
-                          type="text" 
-                          value={selectedAdminLab.tutorial || ''} 
-                          onChange={e => handleUpdateLabField('tutorial', e.target.value)} 
-                        />
-                      </div>
-                      <div className="form-group double-col">
-                        <label>Lab Title</label>
-                        <input 
-                          type="text" 
-                          value={selectedAdminLab.title || ''} 
-                          onChange={e => handleUpdateLabField('title', e.target.value)} 
-                        />
+                      <div className="admin-lab-actions" onClick={e => e.stopPropagation()}>
+                        <button className="admin-icon-btn" onClick={() => handleMoveLab(index, -1)} disabled={index === 0} title="Move Up">
+                          <ArrowUp size={12} />
+                        </button>
+                        <button className="admin-icon-btn" onClick={() => handleMoveLab(index, 1)} disabled={index === labs.length - 1} title="Move Down">
+                          <ArrowDown size={12} />
+                        </button>
+                        <button className="admin-icon-btn text-danger" onClick={() => handleDeleteLab(lab.labNum)} title="Delete Lab">
+                          <Trash2 size={12} />
+                        </button>
                       </div>
                     </div>
+                  ))}
+                </div>
+              </aside>
+
+              {/* Admin Main Area */}
+              <div className="admin-main">
+                {/* Top action bar for saving to codebase */}
+                <div className="admin-topbar">
+                  <div className="admin-status">
+                    {saveStatus ? <span className="save-status-msg">{saveStatus}</span> : <span>Database connected. Click save to apply changes.</span>}
                   </div>
-                  
-                  {/* Editor Tabs (Problems, Concept Notes, Quizzes) */}
-                  <div className="admin-tabs-header">
-                    {['problems', 'theory', 'quizzes'].map(tab => (
-                      <button 
-                        key={tab}
-                        className={`admin-tab-btn ${adminActiveTab === tab ? 'active' : ''}`}
-                        onClick={() => setAdminActiveTab(tab)}
-                      >
-                        {tab.toUpperCase()}
-                      </button>
-                    ))}
+                  <div className="admin-global-actions">
+                    <button className="action-btn-sm btn-save-codebase" onClick={handleSaveToSupabase}>
+                      <Save size={14} />
+                      <span>Save to Database</span>
+                    </button>
+                    <button className="action-btn-sm" onClick={handleDownloadBackup}>
+                      <Download size={14} />
+                      <span>Download Backup</span>
+                    </button>
+                    <button className="action-btn-sm" onClick={() => { setUploaderTargetProblemIndex(null); setIsImageUploaderOpen(true); }}>
+                      <Image size={14} />
+                      <span>Image to Link</span>
+                    </button>
+                    <button className="action-btn-sm text-danger" onClick={handleResetDefaults}>
+                      <RotateCcw size={14} />
+                      <span>Reset Defaults</span>
+                    </button>
+                    <button className="action-btn-sm btn-sign-out" onClick={() => supabase.auth.signOut()}>
+                      <X size={14} />
+                      <span>Sign Out</span>
+                    </button>
                   </div>
-                  
-                  <div className="admin-tab-content">
-                    {/* Tab 1: Problems Editor */}
-                    {adminActiveTab === 'problems' && (
-                      <div className="admin-problems-editor">
-                        <div className="section-header-row">
-                          <h4>Problems List ({selectedAdminLab.problems?.length || 0})</h4>
-                          <button className="admin-add-btn-sm" onClick={handleAddProblem}>
-                            <Plus size={14} />
-                            <span>Add Problem</span>
-                          </button>
+                </div>
+
+
+                {/* Selected Lab Editor */}
+                {selectedAdminLab ? (
+                  <div className="admin-editor-card">
+                    {/* Lab-wide Edit Fields */}
+                    <div className="admin-section-card">
+                      <h3>Lab {selectedAdminLab.labNum} Details</h3>
+                      <div className="form-row-grid">
+                        <div className="form-group">
+                          <label>Lab Number</label>
+                          <input
+                            type="number"
+                            value={selectedAdminLab.labNum}
+                            onChange={e => handleUpdateLabField('labNum', parseInt(e.target.value) || 0)}
+                          />
                         </div>
-                        
-                        <div className="admin-problems-list">
-                          {(selectedAdminLab.problems || []).map((prob, pIdx) => (
-                            <div key={prob.index} className="admin-problem-edit-row">
-                              <div className="problem-drag-meta">
-                                <span className="p-badge">#{prob.index}</span>
-                                <div className="p-nav-actions">
-                                  <button onClick={() => handleMoveProblem(pIdx, -1)} disabled={pIdx === 0}>
-                                    <ArrowUp size={12} />
-                                  </button>
-                                  <button onClick={() => handleMoveProblem(pIdx, 1)} disabled={pIdx === selectedAdminLab.problems.length - 1}>
-                                    <ArrowDown size={12} />
-                                  </button>
-                                </div>
-                              </div>
-                              
-                              <div className="problem-inputs-grid">
-                                <div className="form-group">
-                                  <label>Title</label>
-                                  <input 
-                                    type="text" 
-                                    value={prob.title || ''} 
-                                    onChange={e => handleUpdateProblemField(pIdx, 'title', e.target.value)} 
-                                  />
-                                </div>
-                                <div className="form-group">
-                                  <label>Filename</label>
-                                  <input 
-                                    type="text" 
-                                    value={prob.fileName || ''} 
-                                    onChange={e => handleUpdateProblemField(pIdx, 'fileName', e.target.value)} 
-                                  />
-                                </div>
-                                <div className="form-group">
-                                  <label>Video Link (YouTube URL)</label>
-                                  <input 
-                                    type="text" 
-                                    value={prob.videoUrl || ''} 
-                                    onChange={e => handleUpdateProblemField(pIdx, 'videoUrl', e.target.value)} 
-                                  />
-                                </div>
-                                <div className="form-group">
-                                  <div className="admin-field-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                                    <label style={{ margin: 0 }}>Notes Image Link</label>
-                                    <button 
-                                      type="button" 
-                                      className="admin-inline-upload-btn"
-                                      onClick={() => {
-                                        setUploaderTargetProblemIndex(pIdx);
-                                        setIsImageUploaderOpen(true);
-                                      }}
-                                    >
-                                      <Upload size={10} /> Upload / Paste
-                                    </button>
-                                  </div>
-                                  <input 
-                                    type="text" 
-                                    value={prob.notesImageUrl || ''} 
-                                    onChange={e => handleUpdateProblemField(pIdx, 'notesImageUrl', e.target.value)} 
-                                  />
-                                </div>
-                                
-                                <div className="form-group full-col">
-                                  <label>C Code Editor</label>
-                                  <textarea 
-                                    className="admin-code-textarea"
-                                    value={prob.code || ''} 
-                                    onChange={e => handleUpdateProblemField(pIdx, 'code', e.target.value)}
-                                    rows={12}
-                                  />
-                                </div>
-                              </div>
-                              
-                              <button className="delete-problem-row-btn" onClick={() => handleDeleteProblem(pIdx)} title="Delete Problem">
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-                          ))}
+                        <div className="form-group">
+                          <label>Tutorial Tag</label>
+                          <input
+                            type="text"
+                            value={selectedAdminLab.tutorial || ''}
+                            onChange={e => handleUpdateLabField('tutorial', e.target.value)}
+                          />
+                        </div>
+                        <div className="form-group double-col">
+                          <label>Lab Title</label>
+                          <input
+                            type="text"
+                            value={selectedAdminLab.title || ''}
+                            onChange={e => handleUpdateLabField('title', e.target.value)}
+                          />
                         </div>
                       </div>
-                    )}
-                    
-                    {/* Tab 2: Theory Notes Editor */}
-                    {adminActiveTab === 'theory' && (
-                      <div className="admin-theory-editor">
-                        <h4>Concept Notes for Lab {selectedAdminLab.labNum}</h4>
-                        
-                        {selectedAdminTheory ? (
-                          <div className="theory-inputs-grid">
-                            <div className="form-group">
-                              <label>Concept Name</label>
-                              <input 
-                                type="text" 
-                                value={selectedAdminTheory.concept || ''} 
-                                onChange={e => handleUpdateTheoryField('concept', e.target.value)}
-                              />
-                            </div>
-                            
-                            <div className="form-group full-col">
-                              <label>Summary Description</label>
-                              <textarea 
-                                value={selectedAdminTheory.summary || ''} 
-                                onChange={e => handleUpdateTheoryField('summary', e.target.value)}
-                                rows={3}
-                              />
-                            </div>
-                            
-                            <div className="form-group full-col">
-                              <div className="section-header-row">
-                                <label>Key Objectives / Points (List)</label>
-                                <button className="admin-add-btn-sm" onClick={handleAddTheoryKeyPoint}>
-                                  <Plus size={12} />
-                                  <span>Add Point</span>
-                                </button>
-                              </div>
-                              <div className="theory-keypoints-list">
-                                {(selectedAdminTheory.keyPoints || []).map((kp, kpIdx) => (
-                                  <div key={kpIdx} className="keypoint-edit-row">
-                                    <input 
-                                      type="text" 
-                                      value={kp || ''} 
-                                      onChange={e => handleUpdateTheoryKeyPoint(kpIdx, e.target.value)} 
-                                    />
-                                    <button onClick={() => handleDeleteTheoryKeyPoint(kpIdx)}>
-                                      <Trash2 size={14} />
-                                    </button>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                            
-                            <div className="form-group full-col">
-                              <label>Detailed Explanation (HTML support)</label>
-                              <textarea 
-                                value={selectedAdminTheory.explanation || ''} 
-                                onChange={e => handleUpdateTheoryField('explanation', e.target.value)}
-                                rows={10}
-                              />
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="admin-empty-state">
-                            <p>No theory notes created for this Lab yet.</p>
-                            <button className="admin-add-btn" onClick={handleCreateTheoryNotes}>
-                              <Plus size={16} />
-                              <span>Create Concept Notes</span>
+                    </div>
+
+                    {/* Editor Tabs (Problems, Concept Notes, Quizzes) */}
+                    <div className="admin-tabs-header">
+                      {['problems', 'theory', 'quizzes'].map(tab => (
+                        <button
+                          key={tab}
+                          className={`admin-tab-btn ${adminActiveTab === tab ? 'active' : ''}`}
+                          onClick={() => setAdminActiveTab(tab)}
+                        >
+                          {tab.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="admin-tab-content">
+                      {/* Tab 1: Problems Editor */}
+                      {adminActiveTab === 'problems' && (
+                        <div className="admin-problems-editor">
+                          <div className="section-header-row">
+                            <h4>Problems List ({selectedAdminLab.problems?.length || 0})</h4>
+                            <button className="admin-add-btn-sm" onClick={handleAddProblem}>
+                              <Plus size={14} />
+                              <span>Add Problem</span>
                             </button>
                           </div>
-                        )}
-                      </div>
-                    )}
-                    
-                    {/* Tab 3: Quizzes Editor */}
-                    {adminActiveTab === 'quizzes' && (
-                      <div className="admin-quizzes-editor">
-                        <div className="section-header-row">
-                          <h4>Lab Quiz Questions</h4>
-                          <button className="admin-add-btn-sm" onClick={handleAddQuizQuestion}>
-                            <Plus size={14} />
-                            <span>Add Question</span>
-                          </button>
-                        </div>
-                        
-                        <div className="admin-quizzes-list">
-                          {(quizData[selectedAdminLab.labNum] || []).map((quiz, qIdx) => (
-                            <div key={qIdx} className="admin-quiz-edit-row">
-                              <div className="quiz-inputs-grid">
-                                <div className="form-group full-col">
-                                  <label>Question #{qIdx + 1}</label>
-                                  <input 
-                                    type="text" 
-                                    value={quiz.question || ''} 
-                                    onChange={e => handleUpdateQuizField(qIdx, 'question', e.target.value)} 
-                                  />
+
+                          <div className="admin-problems-list">
+                            {(selectedAdminLab.problems || []).map((prob, pIdx) => (
+                              <div key={prob.index} className="admin-problem-edit-row">
+                                <div className="problem-drag-meta">
+                                  <span className="p-badge">#{prob.index}</span>
+                                  <div className="p-nav-actions">
+                                    <button onClick={() => handleMoveProblem(pIdx, -1)} disabled={pIdx === 0}>
+                                      <ArrowUp size={12} />
+                                    </button>
+                                    <button onClick={() => handleMoveProblem(pIdx, 1)} disabled={pIdx === selectedAdminLab.problems.length - 1}>
+                                      <ArrowDown size={12} />
+                                    </button>
+                                  </div>
                                 </div>
-                                
-                                <div className="form-group options-col">
-                                  <label>Multiple Choices</label>
-                                  {(quiz.options || []).map((opt, optIdx) => (
-                                    <div key={optIdx} className="quiz-option-input-row">
-                                      <span className="opt-letter">{String.fromCharCode(65 + optIdx)}</span>
-                                      <input 
-                                        type="text" 
-                                        value={opt || ''} 
-                                        onChange={e => handleUpdateQuizOption(qIdx, optIdx, e.target.value)} 
+
+                                <div className="problem-inputs-grid">
+                                  <div className="form-group">
+                                    <label>Title</label>
+                                    <input
+                                      type="text"
+                                      value={prob.title || ''}
+                                      onChange={e => handleUpdateProblemField(pIdx, 'title', e.target.value)}
+                                    />
+                                  </div>
+                                  <div className="form-group">
+                                    <label>Filename</label>
+                                    <input
+                                      type="text"
+                                      value={prob.fileName || ''}
+                                      onChange={e => handleUpdateProblemField(pIdx, 'fileName', e.target.value)}
+                                    />
+                                  </div>
+                                  <div className="form-group">
+                                    <label>Video Link (YouTube URL)</label>
+                                    <input
+                                      type="text"
+                                      value={prob.videoUrl || ''}
+                                      onChange={e => handleUpdateProblemField(pIdx, 'videoUrl', e.target.value)}
+                                    />
+                                  </div>
+                                  <div className="form-group">
+                                    <div className="admin-field-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                      <label style={{ margin: 0 }}>Notes Image Link</label>
+                                      <button
+                                        type="button"
+                                        className="admin-inline-upload-btn"
+                                        onClick={() => {
+                                          setUploaderTargetProblemIndex(pIdx);
+                                          setIsImageUploaderOpen(true);
+                                        }}
+                                      >
+                                        <Upload size={10} /> Upload / Paste
+                                      </button>
+                                    </div>
+                                    <input
+                                      type="text"
+                                      value={prob.notesImageUrl || ''}
+                                      onChange={e => handleUpdateProblemField(pIdx, 'notesImageUrl', e.target.value)}
+                                    />
+                                  </div>
+
+                                  <div className="form-group full-col">
+                                    <label>C Code Editor</label>
+                                    <textarea
+                                      className="admin-code-textarea"
+                                      value={prob.code || ''}
+                                      onChange={e => handleUpdateProblemField(pIdx, 'code', e.target.value)}
+                                      rows={12}
+                                    />
+                                  </div>
+                                </div>
+
+                                <button className="delete-problem-row-btn" onClick={() => handleDeleteProblem(pIdx)} title="Delete Problem">
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Tab 2: Theory Notes Editor */}
+                      {adminActiveTab === 'theory' && (
+                        <div className="admin-theory-editor">
+                          <h4>Concept Notes for Lab {selectedAdminLab.labNum}</h4>
+
+                          {selectedAdminTheory ? (
+                            <div className="theory-inputs-grid">
+                              <div className="form-group">
+                                <label>Concept Name</label>
+                                <input
+                                  type="text"
+                                  value={selectedAdminTheory.concept || ''}
+                                  onChange={e => handleUpdateTheoryField('concept', e.target.value)}
+                                />
+                              </div>
+
+                              <div className="form-group full-col">
+                                <label>Summary Description</label>
+                                <textarea
+                                  value={selectedAdminTheory.summary || ''}
+                                  onChange={e => handleUpdateTheoryField('summary', e.target.value)}
+                                  rows={3}
+                                />
+                              </div>
+
+                              <div className="form-group full-col">
+                                <div className="section-header-row">
+                                  <label>Key Objectives / Points (List)</label>
+                                  <button className="admin-add-btn-sm" onClick={handleAddTheoryKeyPoint}>
+                                    <Plus size={12} />
+                                    <span>Add Point</span>
+                                  </button>
+                                </div>
+                                <div className="theory-keypoints-list">
+                                  {(selectedAdminTheory.keyPoints || []).map((kp, kpIdx) => (
+                                    <div key={kpIdx} className="keypoint-edit-row">
+                                      <input
+                                        type="text"
+                                        value={kp || ''}
+                                        onChange={e => handleUpdateTheoryKeyPoint(kpIdx, e.target.value)}
                                       />
+                                      <button onClick={() => handleDeleteTheoryKeyPoint(kpIdx)}>
+                                        <Trash2 size={14} />
+                                      </button>
                                     </div>
                                   ))}
                                 </div>
-                                
-                                <div className="form-group select-col">
-                                  <label>Correct Answer</label>
-                                  <select 
-                                    value={quiz.answer} 
-                                    onChange={e => handleUpdateQuizField(qIdx, 'answer', parseInt(e.target.value) || 0)}
-                                  >
-                                    {[0, 1, 2, 3].map(val => (
-                                      <option key={val} value={val}>
-                                        Option {String.fromCharCode(65 + val)}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
-                                
-                                <div className="form-group full-col">
-                                  <label>Explanation / Rationale</label>
-                                  <textarea 
-                                    value={quiz.explanation || ''} 
-                                    onChange={e => handleUpdateQuizField(qIdx, 'explanation', e.target.value)}
-                                    rows={3}
-                                  />
-                                </div>
                               </div>
-                              
-                              <button className="delete-problem-row-btn" onClick={() => handleDeleteQuizQuestion(qIdx)} title="Delete Question">
-                                <Trash2 size={16} />
-                              </button>
+
+                              <div className="form-group full-col">
+                                <label>Detailed Explanation (HTML support)</label>
+                                <textarea
+                                  value={selectedAdminTheory.explanation || ''}
+                                  onChange={e => handleUpdateTheoryField('explanation', e.target.value)}
+                                  rows={10}
+                                />
+                              </div>
                             </div>
-                          ))}
-                          {(!quizData[selectedAdminLab.labNum] || quizData[selectedAdminLab.labNum].length === 0) && (
+                          ) : (
                             <div className="admin-empty-state">
-                              <p>No quiz questions added for this Lab yet.</p>
+                              <p>No theory notes created for this Lab yet.</p>
+                              <button className="admin-add-btn" onClick={handleCreateTheoryNotes}>
+                                <Plus size={16} />
+                                <span>Create Concept Notes</span>
+                              </button>
                             </div>
                           )}
                         </div>
-                      </div>
-                    )}
+                      )}
+
+                      {/* Tab 3: Quizzes Editor */}
+                      {adminActiveTab === 'quizzes' && (
+                        <div className="admin-quizzes-editor">
+                          <div className="section-header-row">
+                            <h4>Lab Quiz Questions</h4>
+                            <button className="admin-add-btn-sm" onClick={handleAddQuizQuestion}>
+                              <Plus size={14} />
+                              <span>Add Question</span>
+                            </button>
+                          </div>
+
+                          <div className="admin-quizzes-list">
+                            {(quizData[selectedAdminLab.labNum] || []).map((quiz, qIdx) => (
+                              <div key={qIdx} className="admin-quiz-edit-row">
+                                <div className="quiz-inputs-grid">
+                                  <div className="form-group full-col">
+                                    <label>Question #{qIdx + 1}</label>
+                                    <input
+                                      type="text"
+                                      value={quiz.question || ''}
+                                      onChange={e => handleUpdateQuizField(qIdx, 'question', e.target.value)}
+                                    />
+                                  </div>
+
+                                  <div className="form-group options-col">
+                                    <label>Multiple Choices</label>
+                                    {(quiz.options || []).map((opt, optIdx) => (
+                                      <div key={optIdx} className="quiz-option-input-row">
+                                        <span className="opt-letter">{String.fromCharCode(65 + optIdx)}</span>
+                                        <input
+                                          type="text"
+                                          value={opt || ''}
+                                          onChange={e => handleUpdateQuizOption(qIdx, optIdx, e.target.value)}
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
+
+                                  <div className="form-group select-col">
+                                    <label>Correct Answer</label>
+                                    <select
+                                      value={quiz.answer}
+                                      onChange={e => handleUpdateQuizField(qIdx, 'answer', parseInt(e.target.value) || 0)}
+                                    >
+                                      {[0, 1, 2, 3].map(val => (
+                                        <option key={val} value={val}>
+                                          Option {String.fromCharCode(65 + val)}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </div>
+
+                                  <div className="form-group full-col">
+                                    <label>Explanation / Rationale</label>
+                                    <textarea
+                                      value={quiz.explanation || ''}
+                                      onChange={e => handleUpdateQuizField(qIdx, 'explanation', e.target.value)}
+                                      rows={3}
+                                    />
+                                  </div>
+                                </div>
+
+                                <button className="delete-problem-row-btn" onClick={() => handleDeleteQuizQuestion(qIdx)} title="Delete Question">
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
+                            ))}
+                            {(!quizData[selectedAdminLab.labNum] || quizData[selectedAdminLab.labNum].length === 0) && (
+                              <div className="admin-empty-state">
+                                <p>No quiz questions added for this Lab yet.</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <div className="admin-empty-state">
-                  <h3>Select a Lab from the sidebar or click "Add Lab" to start editing</h3>
-                </div>
-              )}
+                ) : (
+                  <div className="admin-empty-state">
+                    <h3>Select a Lab from the sidebar or click "Add Lab" to start editing</h3>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )
-      ) : (
+          )
+        ) : (
           <div className="dashboard-content">
-            
+
             {!selectedProblem ? (
               <div className="welcome-hero">
                 <div className="welcome-hero-info">
@@ -2257,7 +3085,7 @@ function App() {
               </div>
             ) : (
               <div className="workspace-container">
-                
+
                 {/* Problem Title & Actions */}
                 <div className="problem-info-header">
                   <div className="problem-meta">
@@ -2267,7 +3095,7 @@ function App() {
                     </span>
                     <span className="filename-label">{selectedProblem.fileName}</span>
                   </div>
-                  
+
                   <div className="code-viewer-actions">
                     {selectedProblem.notesImageUrl && selectedProblem.notesImageUrl.trim() !== '' && (
                       <button className="action-btn-sm btn-highlight-notes" onClick={handleNotesButtonClick}>
@@ -2295,7 +3123,7 @@ function App() {
                           <div key={idx} className="line-num-item">{idx + 1}</div>
                         ))}
                       </div>
-                      <code 
+                      <code
                         className="code-content-rendered"
                         dangerouslySetInnerHTML={{ __html: highlightCSyntax(selectedProblem.code) }}
                       />
@@ -2306,7 +3134,7 @@ function App() {
 
                 {/* Highlighted Video section and Concept Notes */}
                 <div className={`concept-video-grid ${!selectedProblem.videoUrl ? 'no-video' : ''}`}>
-                  
+
                   {/* Concept Notes Card */}
                   {selectedLab && theory[selectedLab.labNum] && (
                     <div className="notes-card">
@@ -2318,7 +3146,7 @@ function App() {
                         <p className="concept-summary">
                           {theory[selectedLab.labNum].summary}
                         </p>
-                        
+
                         <h4 className="section-title">Key Objectives</h4>
                         <ul className="objectives-list">
                           {theory[selectedLab.labNum].keyPoints?.map((pt, i) => (
@@ -2326,9 +3154,9 @@ function App() {
                           ))}
                         </ul>
 
-                        <div 
+                        <div
                           className="detailed-explanation"
-                          dangerouslySetInnerHTML={{ __html: theory[selectedLab.labNum].explanation || '' }} 
+                          dangerouslySetInnerHTML={{ __html: theory[selectedLab.labNum].explanation || '' }}
                         />
 
                         {selectedProblem.notesImageUrl && selectedProblem.notesImageUrl.trim() !== '' && (
@@ -2352,12 +3180,12 @@ function App() {
                           <span className="highlight-badge">Recommended Study Tool</span>
                         </div>
                       </div>
-                      
+
                       <div className="video-player-wrapper">
                         <div className="video-frame-container">
                           <div id="yt-player"></div>
                         </div>
-                        
+
                         {/* Premium Custom Control Console */}
                         {isPlayerReady && (
                           <div className="video-custom-controls">
@@ -2366,11 +3194,11 @@ function App() {
                               <button onClick={() => handleSeek(-10)} className="control-btn" title="Rewind 10s">
                                 <Rewind size={16} />
                               </button>
-                              
+
                               <button onClick={handlePlayPause} className="control-btn play-pause-btn" title={isPlaying ? "Pause" : "Play"}>
                                 {isPlaying ? <Pause size={16} /> : <Play size={16} />}
                               </button>
-                              
+
                               <button onClick={() => handleSeek(10)} className="control-btn" title="Fast Forward 10s">
                                 <FastForward size={16} />
                               </button>
@@ -2453,7 +3281,7 @@ function App() {
                 <ArrowRight size={24} />
               </button>
             </div>
-            
+
             <div className="notes-modal-footer">
               <span className="notes-modal-filename">{selectedProblem.fileName}</span>
               <span className="notes-modal-instruction">Use Left/Right arrows or Escape to navigate diagram slides</span>
@@ -2464,8 +3292,8 @@ function App() {
 
       {/* Floating Save Button for Admin panel */}
       {viewMode === 'admin' && session && (
-        <button 
-          className="admin-floating-save-btn" 
+        <button
+          className="admin-floating-save-btn"
           onClick={handleSaveToSupabase}
           title="Save Changes to Database"
         >
@@ -2475,9 +3303,9 @@ function App() {
       )}
 
       {/* Image Uploader Modal Popup */}
-      <ImageUploaderModal 
-        isOpen={isImageUploaderOpen} 
-        onClose={() => setIsImageUploaderOpen(false)} 
+      <ImageUploaderModal
+        isOpen={isImageUploaderOpen}
+        onClose={() => setIsImageUploaderOpen(false)}
         supabase={supabase}
         targetProblemTitle={uploaderTargetProblemIndex !== null && selectedAdminLab?.problems[uploaderTargetProblemIndex] ? selectedAdminLab.problems[uploaderTargetProblemIndex].title : null}
         onInsertLink={(url) => {
@@ -2487,13 +3315,35 @@ function App() {
         }}
       />
 
+      {/* Syllabus Modal Popup */}
+      {syllabusModalOpen && (
+        <SyllabusModal 
+          course={syllabusModalCourse} 
+          onClose={() => setSyllabusModalOpen(false)}
+          onNotify={() => {
+            if (syllabusModalCourse?.status === 'active') {
+              setViewMode('workspace');
+              setSyllabusModalOpen(false);
+            } else {
+              triggerNotifyToast();
+            }
+          }}
+        />
+      )}
+
+      {/* Notify Toast */}
+      <div className={`notify-toast ${showNotifyToast ? 'show' : ''}`}>
+        <Sparkles size={16} style={{ color: 'var(--secondary)' }} />
+        <span>You will be notified as soon as this course is released!</span>
+      </div>
+
       {/* Futuristic Virtual HUD Pointer */}
       {virtualPointer.active && (
-        <div 
+        <div
           className={`virtual-hud-pointer ${virtualPointer.phase}`}
-          style={{ 
-            left: `${virtualPointer.x}px`, 
-            top: `${virtualPointer.y}px` 
+          style={{
+            left: `${virtualPointer.x}px`,
+            top: `${virtualPointer.y}px`
           }}
         >
           <div className="hud-reticle"></div>
