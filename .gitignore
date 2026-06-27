@@ -1,0 +1,50 @@
+# Compiled binaries, libraries, and object files
+*.o
+*.obj
+*.out
+*.exe
+*.app
+*.dSYM/
+numstr
+output/
+
+# Dependency directories
+node_modules/
+jspm_packages/
+web_modules/
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+
+# Logs and databases
+*.log
+logs/
+*.sqlite
+
+# OS files
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Nested git repositories / external repositories
+oopscode/

@@ -1,0 +1,480 @@
+[
+  {
+    "labNum": 2,
+    "tutorial": "BRANCHING AND LOGICAL EXPRESSIONS",
+    "title": "SIMPLE COMPUTATIONAL PROBLEMS USING ARITHMETIC EXPRESSIONS",
+    "problems": [
+      {
+        "index": 1,
+        "title": "Program to find sum and average of two numbers.",
+        "code": "#include <stdio.h>\n\nint main() {\n    float num1, num2, sum, avg;\n    printf(\"Enter two numbers: \");\n    scanf(\"%f %f\", &num1, &num2);\n    sum = num1 + num2;\n    avg = sum / 2;\n    printf(\"Sum: %.2f\\n\", sum);\n    printf(\"Average: %.2f\\n\", avg);\n    return 0;\n}",
+        "fileName": "1_sum_avg.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0?si=ax7dKhI4EF8Irt6n",
+        "notesImageUrl": "notes/c_notes_basics.png"
+      },
+      {
+        "index": 2,
+        "title": "Program to find Simple Interest.",
+        "code": "#include <stdio.h>\nint main() {\n    float principal, rate, time, si;\n    printf(\"Enter Principal, Rate of Interest and Time (in years): \");\n    scanf(\"%f %f %f\", &principal, &rate, &time);\n    si = (principal * rate * time) / 100;\n    printf(\"Simple Interest: %.2f\\n\", si);\n    return 0;\n}\n",
+        "fileName": "2_simple_interest.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_basics.png"
+      },
+      {
+        "index": 3,
+        "title": "Program to find sum of individual digits of a given 5 digit number.",
+        "code": "#include <stdio.h>\nint main() {\n    int num, sum = 0, temp;\n    printf(\"Enter a 5-digit number: \");\n    scanf(\"%d\", &num);\n    temp = num;\n    while (temp > 0) {\n        sum += temp % 10;\n        temp /= 10;\n    }\n    printf(\"Sum of digits of %d is %d\\n\", num, sum);\n    return 0;\n}\n",
+        "fileName": "3_sum_digits.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_basics.png"
+      },
+      {
+        "index": 4,
+        "title": "Program to reverse a 5 digit number.",
+        "code": "#include <stdio.h>\n\nint main() {\n    int num, rev = 0, temp;\n    printf(\"Enter a 5-digit number: \");\n    scanf(\"%d\", &num);\n    temp = num;\n    while (temp > 0) {\n        rev = rev * 10 + (temp % 10);\n        temp /= 10;\n    }\n    printf(\"Reverse of %d is %d\\n\", num, rev);\n    return 0;\n}",
+        "fileName": "4_reverse_number.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_basics.png"
+      }
+    ]
+  },
+  {
+    "labNum": 3,
+    "tutorial": "LOOPS, WHILE AND FOR LOOPS",
+    "title": "PROBLEMS INVOLVING IF-THEN-ELSE STRUCTURES",
+    "problems": [
+      {
+        "index": 1,
+        "title": "Program to find entered number is even or odd.",
+        "code": "#include <stdio.h>\n\nint main() {\n    int num;\n    printf(\"Enter a number: \");\n    scanf(\"%d\", &num);\n    if (num % 2 == 0)\n        printf(\"%d is even.\\n\", num);\n    else\n        printf(\"%d is odd.\\n\", num);\n    return 0;\n}\n",
+        "fileName": "1_even_odd.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_basics.png"
+      },
+      {
+        "index": 2,
+        "title": "Program to find greatest of 5 numbers",
+        "code": "#include <stdio.h>\n\nint main() {\n    int a[5], max, i;\n    printf(\"Enter 5 numbers: \");\n    for (i = 0; i < 5; i++) {\n        scanf(\"%d\", &a[i]);\n    }\n    max = a[0];\n    for (i = 1; i < 5; i++) {\n        if (a[i] > max)\n            max = a[i];\n    }\n    printf(\"Greatest number is: %d\\n\", max);\n    return 0;\n}\n",
+        "fileName": "2_greatest_of_5.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_basics.png"
+      },
+      {
+        "index": 3,
+        "title": "Program to implement all arithmetic operator using switch.",
+        "code": "#include <stdio.h>\n\nint main() {\n    char op;\n    float num1, num2;\n    printf(\"Enter an operator (+, -, *, /): \");\n    scanf(\" %c\", &op);\n    printf(\"Enter two operands: \");\n    scanf(\"%f %f\", &num1, &num2);\n\n    switch (op) {\n        case '+':\n            printf(\"%f + %f = %f\\n\", num1, num2, num1 + num2);\n            break;\n        case '-':\n            printf(\"%f - %f = %.2f\\n\", num1, num2, num1 - num2);\n            break;\n        case '*':\n            printf(\"%f * %f = %f\\n\", num1, num2, num1 * num2);\n            break;\n        case '/':\n            if (num2 != 0)\n                printf(\"%f / %f = %f\\n\", num1, num2, num1 / num2);\n            else\n                printf(\"Error! Division by zero.\\n\");\n            break;\n        default:\n            printf(\"Error! operator is not correct\\n\");\n    }\n    return 0;\n}\n",
+        "fileName": "3_arithmetic_switch.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_basics.png"
+      },
+      {
+        "index": 4,
+        "title": "Program to find out the given character is a vowel or consonant using switch.",
+        "code": "#include <stdio.h>\n\nint main() {\n    char ch;\n    printf(\"Enter a character: \");\n    scanf(\" %c\", &ch);\n\n    switch (ch) {\n        case 'a': case 'e': case 'i': case 'o': case 'u':\n        case 'A': case 'E': case 'I': case 'O': case 'U':\n            printf(\"%c is a vowel.\\n\", ch);\n            break;\n        default:\n            if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'))\n                printf(\"%c is a consonant.\\n\", ch);\n            else\n                printf(\"%c is not an alphabet.\\n\", ch);\n    }\n    return 0;\n}\n",
+        "fileName": "4_vowel_consonant.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_basics.png"
+      },
+      {
+        "index": 5,
+        "title": "Program to accept basic salary of an employee and find out salary if salary greater than 20000 deduct a tax 20% other than 15%.",
+        "code": "#include <stdio.h>\n\nint main() {\n    float basic_salary, net_salary, tax;\n    printf(\"Enter basic salary: \");\n    scanf(\"%f\", &basic_salary);\n\n    if (basic_salary > 20000) {\n        tax = 0.20 * basic_salary;\n    } else {\n        tax = 0.15 * basic_salary;\n    }\n\n    net_salary = basic_salary - tax;\n    printf(\"Basic Salary: %.2f\\n\", basic_salary);\n    printf(\"Tax Deducted: %.2f\\n\", tax);\n    printf(\"Net Salary: %.2f\\n\", net_salary);\n    return 0;\n}\n",
+        "fileName": "5_salary_tax.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_basics.png"
+      }
+    ]
+  },
+  {
+    "labNum": 4,
+    "tutorial": "1D ARRAYS: SEARCHING, SORTING",
+    "title": "ITERATIVE PROBLEMS E.G., SUM OF SERIES",
+    "problems": [
+      {
+        "index": 1,
+        "title": "Program to find square & cubes of 1 to 10.",
+        "code": "#include <stdio.h>\n\nint main() {\n    int i;\n    printf(\"Number\\tSquare\\tCube\\n\");\n    for (i = 1; i <= 10; i++) {\n        printf(\"%d\\t%d\\t%d\\n\", i, i * i, i * i * i);\n    }\n    return 0;\n}\n",
+        "fileName": "1_square_cube.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_loops.png"
+      },
+      {
+        "index": 2,
+        "title": "Program to print the following pattern. (triangle of stars).",
+        "code": "#include <stdio.h>\n\nint main() {\n    int rows, i, j;\n    printf(\"Enter number of rows: \");\n    scanf(\"%d\", &rows);\n    for (i = 1; i <= rows; i++) {\n        for (j = 1; j <= i; j++) {\n            printf(\"* \");\n        }\n        printf(\"\\n\");\n    }\n    return 0;\n}\n",
+        "fileName": "2_pattern.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_loops.png"
+      },
+      {
+        "index": 3,
+        "title": "Program to fine whether the entered number is prime.",
+        "code": "#include <stdio.h>\n\nint main() {\n    int n, i, flag = 0;\n    printf(\"Enter a positive integer: \");\n    scanf(\"%d\", &n);\n\n    if (n == 0 || n == 1)\n        flag = 1;\n\n    for (i = 2; i <= n / 2; ++i) {\n        if (n % i == 0) {\n            flag = 1;\n            break;\n        }\n    }\n\n    if (flag == 0)\n        printf(\"%d is a prime number.\\n\", n);\n    else\n        printf(\"%d is not a prime number.\\n\", n);\n\n    return 0;\n}\n",
+        "fileName": "3_prime.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_loops.png"
+      },
+      {
+        "index": 4,
+        "title": "Program to generate the Fibonacci sequence",
+        "code": "#include <stdio.h>\n\nint main() {\n    int i, n, t1 = 0, t2 = 1, nextTerm;\n    printf(\"Enter the number of terms: \");\n    scanf(\"%d\", &n);\n    printf(\"Fibonacci Series: \");\n\n    for (i = 1; i <= n; ++i) {\n        printf(\"%d, \", t1);\n        nextTerm = t1 + t2;\n        t1 = t2;\n        t2 = nextTerm;\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "fileName": "4_fibonacci.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_loops.png"
+      },
+      {
+        "index": 5,
+        "title": "Program to convert decimal to binary and vice versa.",
+        "code": "#include <stdio.h>\n#include <math.h>\n\nvoid decimalToBinary(int n) {\n    long long binary = 0;\n    int rem, i = 1;\n    int temp = n;\n    while (n != 0) {\n        rem = n % 2;\n        n /= 2;\n        binary += rem * i;\n        i *= 10;\n    }\n    printf(\"Decimal %d to Binary: %lld\\n\", temp, binary);\n}\n\nvoid binaryToDecimal(long long n) {\n    int decimal = 0, i = 0, rem;\n    long long temp = n;\n    while (n != 0) {\n        rem = n % 10;\n        n /= 10;\n        decimal += rem * pow(2, i);\n        ++i;\n    }\n    printf(\"Binary %lld to Decimal: %d\\n\", temp, decimal);\n}\n\nint main() {\n    int dec;\n    long long bin;\n    int choice;\n    printf(\"1. Decimal to Binary\\n2. Binary to Decimal\\nEnter choice: \");\n    scanf(\"%d\", &choice);\n    if (choice == 1) {\n        printf(\"Enter decimal: \");\n        scanf(\"%d\", &dec);\n        decimalToBinary(dec);\n    } else if (choice == 2) {\n        printf(\"Enter binary: \");\n        scanf(\"%lld\", &bin);\n        binaryToDecimal(bin);\n    }\n    return 0;\n}\n",
+        "fileName": "5_dec_bin.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_loops.png"
+      },
+      {
+        "index": 6,
+        "title": "Program to find exponential function.",
+        "code": "#include <stdio.h>\n#include <math.h>\n\n// Implementing e^x using Taylor series: 1 + x + x^2/2! + x^3/3! + ...\ndouble exponential(float x, int n) {\n    double sum = 1.0;\n    double term = 1.0;\n    for (int i = 1; i < n; i++) {\n        term = term * x / i;\n        sum += term;\n    }\n    return sum;\n}\n\nint main() {\n    float x;\n    int n = 20; // precision\n    printf(\"Enter the value of x for e^x: \");\n    scanf(\"%f\", &x);\n    printf(\"e^%.2f = %lf\\n\", x, exponential(x, n));\n    return 0;\n}\n",
+        "fileName": "6_exponential.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_loops.png"
+      },
+      {
+        "index": 7,
+        "title": "Program to find out the given no is palindrome no or not.",
+        "code": "#include <stdio.h>\n\nint main() {\n    int n, reversed = 0, remainder, original;\n    printf(\"Enter an integer: \");\n    scanf(\"%d\", &n);\n    original = n;\n\n    while (n != 0) {\n        remainder = n % 10;\n        reversed = reversed * 10 + remainder;\n        n /= 10;\n    }\n\n    if (original == reversed)\n        printf(\"%d is a palindrome.\\n\", original);\n    else\n        printf(\"%d is not a palindrome.\\n\", original);\n\n    return 0;\n}\n",
+        "fileName": "7_palindrome.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_loops.png"
+      }
+    ]
+  },
+  {
+    "labNum": 5,
+    "tutorial": "Tutorial for Lab 5",
+    "title": "1D ARRAY MANIPULATION",
+    "problems": [
+      {
+        "index": 1,
+        "title": "Program to accept some array element find sum of element & display sum.",
+        "code": "#include <stdio.h>\n\nint main() {\n    int n, i;\n    float sum = 0;\n    printf(\"Enter the number of elements in the array: \");\n    if (scanf(\"%d\", &n) != 1 || n <= 0) {\n        printf(\"Invalid input.\\n\");\n        return 1;\n    }\n    float arr[n];\n    printf(\"Enter %d elements:\\n\", n);\n    for (i = 0; i < n; i++) {\n        if (scanf(\"%f\", &arr[i]) != 1) {\n            printf(\"Invalid input.\\n\");\n            return 1;\n        }\n        sum += arr[i];\n    }\n    printf(\"Sum of elements = %.2f\\n\", sum);\n    return 0;\n}\n",
+        "fileName": "1_array_sum.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_arrays.png"
+      },
+      {
+        "index": 2,
+        "title": "Program to accept an element find out how many times that element is existed in an array.",
+        "code": "// #include <stdio.h>\n\n// int main() {\n//     int n, i, count = 0;\n//     float target;\n//     printf(\"Enter number of elements: \");\n//     if (scanf(\"%d\", &n) != 1 || n <= 0) {\n//         printf(\"Invalid input.\\n\");\n//         return 1;\n//     }\n//     float arr[n];\n//     printf(\"Enter elements:\\n\");\n//     for (i = 0; i < n; i++) {\n//         scanf(\"%f\", &arr[i]);\n//     }\n//     printf(\"Enter the element to find frequency: \");\n//     scanf(\"%f\", &target);\n//     for (i = 0; i < n; i++) {\n//         if (arr[i] == target) {\n//             count++;\n//         }\n//     }\n//     printf(\"Element %.2f exists %d times.\\n\", target, count);\n//     return 0;\n// }\n\n#include <stdio.h>\n\nint main() {\n\n    int n, i;\n    int count = 0;\n    float victm;\n\n    printf(\"Enter number of elements: \");\n    scanf(\"%d\", &n);\n\n    int arr[n];\n\n\n    printf(\"Enter elements:\\n\");\n\n    for(i = 0; i < n; i++) {\n        scanf(\"%d\", &arr[i]);\n    }\n\n\n    printf(\"Enter element to find: \");\n    scanf(\"%d\", &victm);\n\n\n    for(i = 0; i < n; i++) {\n\n        if(arr[i] == victm) {\n            count++;\n        }\n\n    }\n\n    printf(\"Element %d occurs %d times\", victm, count);\n\n    return 0;\n}\n",
+        "fileName": "2_element_frequency.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_arrays.png"
+      },
+      {
+        "index": 3,
+        "title": "Program to accept a position in the position insert an element.",
+        "code": "#include <stdio.h>\n\nint main() {\n\n    int n, i, pos;\n    float element;\n\n\n    printf(\"Enter number of elements: \");\n    scanf(\"%d\", &n);\n\n    float arr[n + 1];\n\n\n    printf(\"Enter elements:\\n\");\n\n    for(i = 0; i < n; i++) {\n        scanf(\"%f\", &arr[i]);\n    }\n\n\n    printf(\"Enter position to insert element: \");\n    scanf(\"%d\", &pos);\n\n\n    printf(\"Enter new element: \");\n    scanf(\"%f\", &element);\n\n\n    for(i = n; i >= pos; i--) {\n        arr[i] = arr[i - 1];\n    }\n\n  \n    arr[pos - 1] = element;\n\n    n++;\n\n    printf(\"Array after insertion:\\n\");\n\n    for(i = 0; i < n; i++) {\n        printf(\"%.2f \", arr[i]);\n    }\n\n    return 0;\n}\n",
+        "fileName": "3_insert_element.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_arrays.png"
+      },
+      {
+        "index": 4,
+        "title": "Program to search a number from an array using linear search.",
+        "code": "#include <stdio.h>\n\nint main() {\n\n    int n, i;\n    int found = 0;\n    float target;\n\n    printf(\"Enter number of elements: \");\n    scanf(\"%d\", &n);\n\n    int arr[n];\n\n    printf(\"Enter elements:\\n\");\n\n    for(i = 0; i < n; i++) {\n        scanf(\"%d\", &arr[i]);\n    }\n\n    printf(\"Enter number to search: \");\n    scanf(\"%d\", &target);\n\n    for(i = 0; i < n; i++) {\n\n        if(arr[i] == target) {\n            printf(\"Element found at position %d\", i + 1);\n            found = found + 1;\n        }\n        else{\n            found = 0;\n        }\n\n    }\n\n    if(found == 0) {\n        printf(\"not found\");\n    }\n\n    return 0;\n}",
+        "fileName": "4_linear_search.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_arrays.png"
+      },
+      {
+        "index": 5,
+        "title": "Program to search a number from an array using linear search.",
+        "code": "#include <stdio.h>\n\nint main() {\n    int n, i, low, high, mid, target, found = 0;\n    printf(\"Enter number of elements: \");\n    if (scanf(\"%d\", &n) != 1 || n <= 0) {\n        printf(\"Invalid input.\\n\");\n        return 1;\n    }\n    int arr[n];\n    printf(\"Enter %d sorted elements:\\n\", n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &arr[i]);\n    }\n    printf(\"Enter number to search: \");\n    scanf(\"%d\", &target);\n    \n    low = 0;\n    high = n - 1;\n    while (low <= high) {\n        mid = (low + high) / 2;\n        if (arr[mid] == target) {\n            printf(\"Element found at position %d\\n\", mid + 1);\n            found = 1;\n            break;\n        } else if (arr[mid] < target) {\n            low = mid + 1;\n        } else {\n            high = mid - 1;\n        }\n    }\n    if (!found) {\n        printf(\"Element not found.\\n\");\n    }\n    return 0;\n}\n",
+        "fileName": "5_binary_search.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_arrays.png"
+      },
+      {
+        "index": 6,
+        "title": "Program to search a number from an array using binary search.",
+        "code": "#include <stdio.h>\n\nint main() {\n    int n, i, j;\n    printf(\"Enter number of elements: \");\n    if (scanf(\"%d\", &n) != 1 || n <= 0) {\n        printf(\"Invalid input.\\n\");\n        return 1;\n    }\n    float arr[n], temp;\n    printf(\"Enter elements:\\n\");\n    for (i = 0; i < n; i++) {\n        scanf(\"%f\", &arr[i]);\n    }\n    for (i = 0; i < n - 1; i++) {\n        for (j = 0; j < n - i - 1; j++) {\n            if (arr[j] > arr[j + 1]) {\n                temp = arr[j];\n                arr[j] = arr[j + 1];\n                arr[j + 1] = temp;\n            }\n        }\n    }\n    printf(\"Sorted array (Bubble Sort):\\n\");\n    for (i = 0; i < n; i++) {\n        printf(\"%.2f \", arr[i]);\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "fileName": "6_bubble_sort.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_arrays.png"
+      },
+      {
+        "index": 7,
+        "title": "Program to sort an array using Bubble sort.",
+        "code": "#include <stdio.h>\n\nint main() {\n    int n, i, j, min_idx;\n    printf(\"Enter number of elements: \");\n    if (scanf(\"%d\", &n) != 1 || n <= 0) {\n        printf(\"Invalid input.\\n\");\n        return 1;\n    }\n    float arr[n], temp;\n    printf(\"Enter elements:\\n\");\n    for (i = 0; i < n; i++) {\n        scanf(\"%f\", &arr[i]);\n    }\n    for (i = 0; i < n - 1; i++) {\n        min_idx = i;\n        for (j = i + 1; j < n; j++) {\n            if (arr[j] < arr[min_idx]) {\n                min_idx = j;\n            }\n        }\n        temp = arr[min_idx];\n        arr[min_idx] = arr[i];\n        arr[i] = temp;\n    }\n    printf(\"Sorted array (Selection Sort):\\n\");\n    for (i = 0; i < n; i++) {\n        printf(\"%.2f \", arr[i]);\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "fileName": "7_selection_sort.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_arrays.png"
+      },
+      {
+        "index": 8,
+        "title": "Program to sort an array using selection sort.",
+        "code": "#include <stdio.h>\n\nint main() {\n    int n, i, j;\n    float key;\n    printf(\"Enter number of elements: \");\n    if (scanf(\"%d\", &n) != 1 || n <= 0) {\n        printf(\"Invalid input.\\n\");\n        return 1;\n    }\n    float arr[n];\n    printf(\"Enter elements:\\n\");\n    for (i = 0; i < n; i++) {\n        scanf(\"%f\", &arr[i]);\n    }\n    for (i = 1; i < n; i++) {\n        key = arr[i];\n        j = i - 1;\n        while (j >= 0 && arr[j] > key) {\n            arr[j + 1] = arr[j];\n            j = j - 1;\n        }\n        arr[j + 1] = key;\n    }\n    printf(\"Sorted array (Insertion Sort):\\n\");\n    for (i = 0; i < n; i++) {\n        printf(\"%.2f \", arr[i]);\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "fileName": "8_insertion_sort.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_arrays.png"
+      }
+    ]
+  },
+  {
+    "labNum": 6,
+    "tutorial": "FUNCTIONS, CALL BY VALUE",
+    "title": "MATRIX PROBLEMS, STRING OPERATIONS",
+    "problems": [
+      {
+        "index": 1,
+        "title": "Program for the addition of two 3 x 3 matrices.",
+        "code": "#include <stdio.h>\n\nint main() {\n    int a[3][3], b[3][3], sum[3][3], i, j;\n    printf(\"Enter elements of first 3x3 matrix:\\n\");\n    for (i = 0; i < 3; i++)\n        for (j = 0; j < 3; j++)\n            scanf(\"%d\", &a[i][j]);\n    printf(\"Enter elements of second 3x3 matrix:\\n\");\n    for (i = 0; i < 3; i++)\n        for (j = 0; j < 3; j++)\n            scanf(\"%d\", &b[i][j]);\n    printf(\"Sum of matrices:\\n\");\n    for (i = 0; i < 3; i++) {\n        for (j = 0; j < 3; j++) {\n            sum[i][j] = a[i][j] + b[i][j];\n            printf(\"%d \", sum[i][j]);\n        }\n        printf(\"\\n\");\n    }\n    return 0;\n}\n",
+        "fileName": "1_matrix_add.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_strings.png"
+      },
+      {
+        "index": 2,
+        "title": "Program to multiply two 3 x 3 matrices.",
+        "code": "#include <stdio.h>\n\nint main() {\n    int a[3][3], b[3][3], mul[3][3], i, j, k;\n    printf(\"Enter elements of first 3x3 matrix:\\n\");\n    for (i = 0; i < 3; i++)\n        for (j = 0; j < 3; j++)\n            scanf(\"%d\", &a[i][j]);\n    printf(\"Enter elements of second 3x3 matrix:\\n\");\n    for (i = 0; i < 3; i++)\n        for (j = 0; j < 3; j++)\n            scanf(\"%d\", &b[i][j]);\n    for (i = 0; i < 3; i++) {\n        for (j = 0; j < 3; j++) {\n            mul[i][j] = 0;\n            for (k = 0; k < 3; k++)\n                mul[i][j] += a[i][k] * b[k][j];\n        }\n    }\n    printf(\"Product of matrices:\\n\");\n    for (i = 0; i < 3; i++) {\n        for (j = 0; j < 3; j++)\n            printf(\"%d \", mul[i][j]);\n        printf(\"\\n\");\n    }\n    return 0;\n}\n",
+        "fileName": "2_matrix_multiply.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_strings.png"
+      },
+      {
+        "index": 3,
+        "title": "Program to find the length of the string without using strlen and then pass the string to characters.",
+        "code": "#include <stdio.h>\n\nint main() {\n    char str[100];\n    int length = 0;\n    printf(\"Enter a string: \");\n    scanf(\"%s\", str);\n    while (str[length] != '\\0') {\n        length++;\n    }\n    printf(\"Length of the string (without strlen): %d\\n\", length);\n    printf(\"String passed to characters: \");\n    for (int i = 0; i < length; i++) {\n        printf(\"'%c' \", str[i]);\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "fileName": "3_string_length.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_strings.png"
+      },
+      {
+        "index": 4,
+        "title": "Program to count the number of vowels in a given string.",
+        "code": "#include <stdio.h>\n#include <ctype.h>\n\nint main() {\n    char str[100];\n    int count = 0, i = 0;\n    printf(\"Enter a string: \");\n    scanf(\"%s\", str);\n    while (str[i] != '\\0') {\n        char ch = tolower(str[i]);\n        if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {\n            count++;\n        }\n        i++;\n    }\n    printf(\"Number of vowels in the string: %d\\n\", count);\n    return 0;\n}\n",
+        "fileName": "4_count_vowels.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_strings.png"
+      },
+      {
+        "index": 5,
+        "title": "Program to check if a given string is a palindrome or not.",
+        "code": "#include <stdio.h>\n#include <string.h>\n\nint main() {\n    char str[100];\n    int i, n, flag = 0;\n    printf(\"Enter a string: \");\n    scanf(\"%s\", str);\n    n = strlen(str);\n    for (i = 0; i < n / 2; i++) {\n        if (str[i] != str[n - i - 1]) {\n            flag = 1;\n            break;\n        }\n    }\n    if (flag)\n        printf(\"\\\"%s\\\" is not a palindrome\\n\", str);\n    else\n        printf(\"\\\"%s\\\" is a palindrome\\n\", str);\n    return 0;\n}\n",
+        "fileName": "5_string_palindrome.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_strings.png"
+      },
+      {
+        "index": 6,
+        "title": "Program to string concatenation. 23. Program to string comparison.",
+        "code": "#include <stdio.h>\n\nint main() {\n    char s1[200], s2[100];\n    int i = 0, j = 0;\n    printf(\"Enter first string: \");\n    scanf(\"%s\", s1);\n    printf(\"Enter second string: \");\n    scanf(\"%s\", s2);\n    while (s1[i] != '\\0') i++;\n    while (s2[j] != '\\0') {\n        s1[i] = s2[j];\n        i++;\n        j++;\n    }\n    s1[i] = '\\0';\n    printf(\"Concatenated string: %s\\n\", s1);\n    return 0;\n}\n",
+        "fileName": "6_string_concat.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_strings.png"
+      },
+      {
+        "index": 7,
+        "title": "Program to string reverse.",
+        "code": "#include <stdio.h>\n\nint main() {\n    char s1[100], s2[100];\n    int i = 0, flag = 0;\n    printf(\"Enter first string: \");\n    scanf(\"%s\", s1);\n    printf(\"Enter second string: \");\n    scanf(\"%s\", s2);\n    while (s1[i] != '\\0' || s2[i] != '\\0') {\n        if (s1[i] != s2[i]) {\n            flag = 1;\n            break;\n        }\n        i++;\n    }\n    if (flag == 0)\n        printf(\"Strings are equal.\\n\");\n    else\n        printf(\"Strings are not equal.\\n\");\n    return 0;\n}\n",
+        "fileName": "7_string_compare.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_strings.png"
+      },
+      {
+        "index": 8,
+        "title": "Program to convert a string from lower case to upper case and vice versa.",
+        "code": "#include <stdio.h>\n#include <string.h>\n\nint main() {\n    char str[100], temp;\n    int i, n;\n    printf(\"Enter a string: \");\n    scanf(\"%s\", str);\n    n = strlen(str);\n    for (i = 0; i < n / 2; i++) {\n        temp = str[i];\n        str[i] = str[n - i - 1];\n        str[n - i - 1] = temp;\n    }\n    printf(\"Reversed string: %s\\n\", str);\n    return 0;\n}\n",
+        "fileName": "8_string_reverse.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_strings.png"
+      },
+      {
+        "index": 9,
+        "title": "Case convert",
+        "code": "#include <stdio.h>\n\nint main() {\n    char str[100];\n    int i = 0;\n    printf(\"Enter a string: \");\n    scanf(\"%s\", str);\n    while (str[i] != '\\0') {\n        if (str[i] >= 'a' && str[i] <= 'z') {\n            str[i] = str[i] - 32;\n        } else if (str[i] >= 'A' && str[i] <= 'Z') {\n            str[i] = str[i] + 32;\n        }\n        i++;\n    }\n    printf(\"Case converted string: %s\\n\", str);\n    return 0;\n}\n",
+        "fileName": "9_case_convert.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_strings.png"
+      }
+    ]
+  },
+  {
+    "labNum": 7,
+    "tutorial": "NUMERICAL METHODS (ROOT FINDING, NUMERICAL DIFFERENTIATION, NUMERICAL INTEGRATION)",
+    "title": "SIMPLE FUNCTIONS",
+    "problems": [
+      {
+        "index": 1,
+        "title": "Program to find the area and perimeter of a circle, rectangle, square and triangle using functions.",
+        "code": "#include <stdio.h>\n#include <math.h>\n\nvoid circle() {\n    float r;\n    printf(\"Enter radius of circle: \");\n    scanf(\"%f\", &r);\n    printf(\"Circle Area: %.2f, Perimeter: %.2f\\n\", 3.14159 * r * r, 2 * 3.14159 * r);\n}\n\nvoid rectangle() {\n    float l, b;\n    printf(\"Enter length and breadth of rectangle: \");\n    scanf(\"%f %f\", &l, &b);\n    printf(\"Rectangle Area: %.2f, Perimeter: %.2f\\n\", l * b, 2 * (l + b));\n}\n\nvoid square() {\n    float s;\n    printf(\"Enter side of square: \");\n    scanf(\"%f\", &s);\n    printf(\"Square Area: %.2f, Perimeter: %.2f\\n\", s * s, 4 * s);\n}\n\nvoid triangle() {\n    float a, b, c, s, area;\n    printf(\"Enter three sides of triangle: \");\n    scanf(\"%f %f %f\", &a, &b, &c);\n    if (a + b > c && a + c > b && b + c > a) {\n        s = (a + b + c) / 2;\n        area = sqrt(s * (s - a) * (s - b) * (s - c));\n        printf(\"Triangle Area: %.2f, Perimeter: %.2f\\n\", area, a + b + c);\n    } else {\n        printf(\"Invalid triangle sides!\\n\");\n    }\n}\n\nint main() {\n    int choice;\n    do {\n        printf(\"\\n--- Area and Perimeter Menu ---\\n\");\n        printf(\"1. Circle\\n2. Rectangle\\n3. Square\\n4. Triangle\\n5. Exit\\n\");\n        printf(\"Enter your choice: \");\n        scanf(\"%d\", &choice);\n        switch (choice) {\n            case 1: circle(); break;\n            case 2: rectangle(); break;\n            case 3: square(); break;\n            case 4: triangle(); break;\n            case 5: printf(\"Exiting...\\n\"); break;\n            default: printf(\"Invalid choice!\\n\");\n        }\n    } while (choice != 5);\n    return 0;\n}\n",
+        "fileName": "1_area_perimeter.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_loops.png"
+      },
+      {
+        "index": 2,
+        "title": "Program to accept a integer no and display given no in words.",
+        "code": "#include <stdio.h>\n\nvoid displayDigit(int digit) {\n    switch (digit) {\n        case 0: printf(\"Zero \"); break;\n        case 1: printf(\"One \"); break;\n        case 2: printf(\"Two \"); break;\n        case 3: printf(\"Three \"); break;\n        case 4: printf(\"Four \"); break;\n        case 5: printf(\"Five \"); break;\n        case 6: printf(\"Six \"); break;\n        case 7: printf(\"Seven \"); break;\n        case 8: printf(\"Eight \"); break;\n        case 9: printf(\"Nine \"); break;\n    }\n}\n\nint main() {\n    int n, rev = 0, digit, temp, count = 0, zeros = 0;\n    printf(\"Enter an integer: \");\n    if (scanf(\"%d\", &n) != 1) {\n        printf(\"Invalid input.\\n\");\n        return 1;\n    }\n    \n    if (n < 0) {\n        printf(\"Minus \");\n        n = -n;\n    }\n\n    if (n == 0) {\n        printf(\"Zero\\n\");\n        return 0;\n    }\n\n    temp = n;\n    // Count trailing zeros that might be lost in reversal\n    while (temp > 0 && temp % 10 == 0) {\n        zeros++;\n        temp /= 10;\n    }\n\n    // Reverse the number\n    temp = n;\n    while (temp > 0) {\n        rev = rev * 10 + (temp % 10);\n        temp /= 10;\n        count++;\n    }\n\n    // Print digits from reversed number\n    while (rev > 0) {\n        digit = rev % 10;\n        displayDigit(digit);\n        rev /= 10;\n    }\n    \n    // Print the trailing zeros\n    for (int i = 0; i < zeros; i++) {\n        displayDigit(0);\n    }\n    \n    printf(\"\\n\");\n    return 0;\n}\n",
+        "fileName": "2_num_in_words.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_loops.png"
+      }
+    ]
+  },
+  {
+    "labNum": 8,
+    "tutorial": "RECURSION, STRUCTURE OF RECURSIVE CALLS",
+    "title": "PROGRAMMING FOR SOLVING NUMERICAL METHODS PROBLEMS",
+    "problems": [
+      {
+        "index": 1,
+        "title": "Root finding(Newton-Raphson, Secant method, Bisection)",
+        "code": "#include <stdio.h>\n#include <math.h>\n#include <stdlib.h>\n\ndouble f(double x) {\n    return x * x - 4; // Example function f(x) = x^2 - 4\n}\n\ndouble df(double x) {\n    return 2 * x; // Derivative f'(x) = 2x\n}\n\nvoid bisection() {\n    double a, b, x, tol;\n    int iter = 0;\n    printf(\"Enter interval [a, b]: \");\n    scanf(\"%lf %lf\", &a, &b);\n    printf(\"Enter tolerance: \");\n    scanf(\"%lf\", &tol);\n\n    if (f(a) * f(b) >= 0) {\n        printf(\"Bisection method fails. f(a) and f(b) must have opposite signs.\\n\");\n        return;\n    }\n\n    printf(\"\\nIter\\t a\\t\\t b\\t\\t x\\t\\t f(x)\\n\");\n    do {\n        x = (a + b) / 2;\n        printf(\"%d\\t %.6lf\\t %.6lf\\t %.6lf\\t %.6lf\\n\", iter++, a, b, x, f(x));\n        if (f(a) * f(x) < 0)\n            b = x;\n        else\n            a = x;\n    } while (fabs(f(x)) > tol);\n\n    printf(\"\\nRoot: %.6lf\\n\", x);\n}\n\nvoid newtonRaphson() {\n    double x0, x1, tol;\n    int iter = 0;\n    printf(\"Enter initial guess: \");\n    scanf(\"%lf\", &x0);\n    printf(\"Enter tolerance: \");\n    scanf(\"%lf\", &tol);\n\n    printf(\"\\nIter\\t x0\\t\\t f(x0)\\t\\t x1\\n\");\n    do {\n        if (df(x0) == 0) {\n            printf(\"Derivative is zero. Newton-Raphson fails.\\n\");\n            return;\n        }\n        x1 = x0 - f(x0) / df(x0);\n        printf(\"%d\\t %.6lf\\t %.6lf\\t %.6lf\\n\", iter++, x0, f(x0), x1);\n        x0 = x1;\n    } while (fabs(f(x1)) > tol);\n\n    printf(\"\\nRoot: %.6lf\\n\", x1);\n}\n\nvoid secant() {\n    double x0, x1, x2, tol;\n    int iter = 0;\n    printf(\"Enter two initial guesses: \");\n    scanf(\"%lf %lf\", &x0, &x1);\n    printf(\"Enter tolerance: \");\n    scanf(\"%lf\", &tol);\n\n    printf(\"\\nIter\\t x0\\t\\t x1\\t\\t x2\\t\\t f(x2)\\n\");\n    do {\n        if (f(x1) - f(x0) == 0) {\n            printf(\"Division by zero. Secant method fails.\\n\");\n            return;\n        }\n        x2 = x1 - (f(x1) * (x1 - x0)) / (f(x1) - f(x0));\n        printf(\"%d\\t %.6lf\\t %.6lf\\t %.6lf\\t %.6lf\\n\", iter++, x0, x1, x2, f(x2));\n        x0 = x1;\n        x1 = x2;\n    } while (fabs(f(x2)) > tol);\n\n    printf(\"\\nRoot: %.6lf\\n\", x2);\n}\n\nint main() {\n    int choice;\n    while (1) {\n        printf(\"\\n--- Root Finding Methods ---\\n\");\n        printf(\"1. Bisection Method\\n\");\n        printf(\"2. Newton-Raphson Method\\n\");\n        printf(\"3. Secant Method\\n\");\n        printf(\"4. Exit\\n\");\n        printf(\"Enter choice: \");\n        scanf(\"%d\", &choice);\n\n        switch (choice) {\n            case 1: bisection(); break;\n            case 2: newtonRaphson(); break;\n            case 3: secant(); break;\n            case 4: exit(0);\n            default: printf(\"Invalid choice!\\n\");\n        }\n    }\n    return 0;\n}\n",
+        "fileName": "1_root_finding.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_loops.png"
+      },
+      {
+        "index": 2,
+        "title": "NUMERICAL DIFFERENTIATION",
+        "code": "#include <stdio.h>\n#include <math.h>\n\ndouble f(double x) {\n    return x * x * x + 2 * x * x + 3 * x + 5; // Example function: f(x) = x^3 + 2x^2 + 3x + 5\n}\n\nint main() {\n    double x, h;\n    printf(\"Enter the value of x at which derivative is to be calculated: \");\n    scanf(\"%lf\", &x);\n    printf(\"Enter the step size h: \");\n    scanf(\"%lf\", &h);\n\n    double forward = (f(x + h) - f(x)) / h;\n    double backward = (f(x) - f(x - h)) / h;\n    double central = (f(x + h) - f(x - h)) / (2 * h);\n\n    printf(\"\\nNumerical Differentiation Results at x = %.4lf with h = %.4lf:\\n\", x, h);\n    printf(\"Forward Difference: %.6lf\\n\", forward);\n    printf(\"Backward Difference: %.6lf\\n\", backward);\n    printf(\"Central Difference: %.6lf\\n\", central);\n\n    // Exact derivative for x^3 + 2x^2 + 3x + 5 is 3x^2 + 4x + 3\n    double exact = 3 * x * x + 4 * x + 3;\n    printf(\"Exact Derivative:    %.6lf\\n\", exact);\n\n    return 0;\n}\n",
+        "fileName": "2_numerical_diff.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_loops.png"
+      },
+      {
+        "index": 3,
+        "title": "NUMERICAL INTEGRATION",
+        "code": "#include <stdio.h>\n#include <math.h>\n\ndouble f(double x) {\n    return 1 / (1 + x * x); // Example function: f(x) = 1 / (1 + x^2)\n}\n\nint main() {\n    double a, b;\n    int n;\n    printf(\"Enter lower limit of integration a: \");\n    scanf(\"%lf\", &a);\n    printf(\"Enter upper limit of integration b: \");\n    scanf(\"%lf\", &b);\n    printf(\"Enter number of sub-intervals n (even for Simpson's 1/3 rule): \");\n    scanf(\"%d\", &n);\n\n    double h = (b - a) / n;\n    double sum_trap = f(a) + f(b);\n    double sum_simp = f(a) + f(b);\n\n    for (int i = 1; i < n; i++) {\n        double x = a + i * h;\n        sum_trap += 2 * f(x);\n        \n        if (i % 2 == 0) {\n            sum_simp += 2 * f(x);\n        } else {\n            sum_simp += 4 * f(x);\n        }\n    }\n\n    double result_trap = (h / 2) * sum_trap;\n    double result_simp = (h / 3) * sum_simp;\n\n    printf(\"\\nNumerical Integration Results:\\n\");\n    printf(\"Trapezoidal Rule Result: %.6lf\\n\", result_trap);\n    if (n % 2 == 0) {\n        printf(\"Simpson's 1/3 Rule Result: %.6lf\\n\", result_simp);\n    } else {\n        printf(\"Simpson's 1/3 Rule cannot be applied (n is odd).\\n\");\n    }\n\n    return 0;\n}\n",
+        "fileName": "3_numerical_int.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_loops.png"
+      }
+    ]
+  },
+  {
+    "labNum": 9,
+    "tutorial": "POINTERS, STRUCTURES AND DYNAMIC MEMORY ALLOCATION",
+    "title": "RECURSIVE FUNCTIONS",
+    "problems": [
+      {
+        "index": 1,
+        "title": "Program to find factorial of a number using reclirsion.",
+        "code": "#include <stdio.h>\n\nlong long factorial(int n) {\n    if (n == 0 || n == 1)\n        return 1;\n    return n * factorial(n - 1);\n}\n\nint main() {\n    int n;\n    printf(\"Enter a non-negative integer: \");\n    scanf(\"%d\", &n);\n    if (n < 0) {\n        printf(\"Factorial of a negative number is not defined.\\n\");\n    } else {\n        printf(\"Factorial of %d is %lld\\n\", n, factorial(n));\n    }\n    return 0;\n}\n",
+        "fileName": "1_factorial.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_loops.png"
+      },
+      {
+        "index": 2,
+        "title": "Program to print Fibonacci sequence.",
+        "code": "#include <stdio.h>\n\nint fibonacci(int n) {\n    if (n <= 1)\n        return n;\n    return fibonacci(n - 1) + fibonacci(n - 2);\n}\n\nint main() {\n    int n;\n    printf(\"Enter the number of terms: \");\n    scanf(\"%d\", &n);\n    printf(\"Fibonacci Sequence: \");\n    for (int i = 0; i < n; i++) {\n        printf(\"%d \", fibonacci(i));\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "fileName": "2_fibonacci.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_loops.png"
+      },
+      {
+        "index": 3,
+        "title": "Program to calculate xº using recursive function.",
+        "code": "#include <stdio.h>\n\ndouble power(double x, int y) {\n    if (y == 0)\n        return 1;\n    if (y > 0)\n        return x * power(x, y - 1);\n    else\n        return 1 / power(x, -y);\n}\n\nint main() {\n    double x;\n    int y;\n    printf(\"Enter base (x): \");\n    scanf(\"%lf\", &x);\n    printf(\"Enter exponent (y): \");\n    scanf(\"%d\", &y);\n    printf(\"%.2lf raised to the power %d is %.4lf\\n\", x, y, power(x, y));\n    return 0;\n}\n",
+        "fileName": "3_power.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_loops.png"
+      }
+    ]
+  },
+  {
+    "labNum": 10,
+    "tutorial": "FILE HANDLING",
+    "title": "POINTERS AND STRUCTURES",
+    "problems": [
+      {
+        "index": 1,
+        "title": "Program to swap two numbers using pointers.",
+        "code": "#include <stdio.h>\n\nvoid swap(int *a, int *b) {\n    int temp = *a;\n    *a = *b;\n    *b = temp;\n}\n\nint main() {\n    int x, y;\n    printf(\"Enter two numbers: \");\n    scanf(\"%d %d\", &x, &y);\n    printf(\"Before swapping: x = %d, y = %d\\n\", x, y);\n    swap(&x, &y);\n    printf(\"After swapping: x = %d, y = %d\\n\", x, y);\n    return 0;\n}\n",
+        "fileName": "1_swap.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_pointers.png"
+      },
+      {
+        "index": 2,
+        "title": "Program to pass and return pointer to function hence calculate average of an array.",
+        "code": "#include <stdio.h>\n#include <stdlib.h>\n\ndouble* calculateAverage(int *arr, int size) {\n    static double avg;\n    int sum = 0;\n    for (int i = 0; i < size; i++) {\n        sum += *(arr + i);\n    }\n    avg = (double)sum / size;\n    return &avg;\n}\n\nint main() {\n    int n;\n    printf(\"Enter number of elements: \");\n    scanf(\"%d\", &n);\n    int *arr = (int*)malloc(n * sizeof(int));\n    printf(\"Enter %d elements:\\n\", n);\n    for (int i = 0; i < n; i++) {\n        scanf(\"%d\", arr + i);\n    }\n\n    double *result = calculateAverage(arr, n);\n    printf(\"Average: %.2lf\\n\", *result);\n\n    free(arr);\n    return 0;\n}\n",
+        "fileName": "2_array_average.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_pointers.png"
+      },
+      {
+        "index": 3,
+        "title": "Program to pass an array as pointer to a function that calculates the sum of all elements of the array.",
+        "code": "#include <stdio.h>\n\nint calculateSum(int *ptr, int size) {\n    int sum = 0;\n    for (int i = 0; i < size; i++) {\n        sum += *(ptr + i);\n    }\n    return sum;\n}\n\nint main() {\n    int n;\n    printf(\"Enter number of elements: \");\n    scanf(\"%d\", &n);\n    int arr[n];\n    printf(\"Enter %d elements:\\n\", n);\n    for (int i = 0; i < n; i++) {\n        scanf(\"%d\", &arr[i]);\n    }\n\n    int totalSum = calculateSum(arr, n);\n    printf(\"Sum of all elements: %d\\n\", totalSum);\n\n    return 0;\n}\n",
+        "fileName": "3_array_sum.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_pointers.png"
+      },
+      {
+        "index": 4,
+        "title": "Program to demonstrate the example of array of pointers,",
+        "code": "#include <stdio.h>\n\nint main() {\n    char *names[] = {\n        \"Alice\",\n        \"Bob\",\n        \"Charlie\",\n        \"Diana\"\n    };\n    int count = sizeof(names) / sizeof(names[0]);\n\n    printf(\"Array of pointers (strings):\\n\");\n    for (int i = 0; i < count; i++) {\n        printf(\"Name[%d]: %s, stored at address: %p\\n\", i, names[i], (void*)names[i]);\n    }\n\n    return 0;\n}\n",
+        "fileName": "4_array_of_pointers.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_pointers.png"
+      },
+      {
+        "index": 5,
+        "title": "Program to generate the employee details using structure.",
+        "code": "#include <stdio.h>\n\nstruct Employee {\n    int id;\n    char name[50];\n    float salary;\n};\n\nint main() {\n    int n;\n    printf(\"Enter number of employees: \");\n    scanf(\"%d\", &n);\n    struct Employee employees[n];\n\n    for (int i = 0; i < n; i++) {\n        printf(\"\\nEnter details for employee %d:\\n\", i + 1);\n        printf(\"ID: \");\n        scanf(\"%d\", &employees[i].id);\n        printf(\"Name: \");\n        scanf(\"%s\", employees[i].name);\n        printf(\"Salary: \");\n        scanf(\"%f\", &employees[i].salary);\n    }\n\n    printf(\"\\nEmployee Details:\\n\");\n    printf(\"ID\\tName\\t\\tSalary\\n\");\n    for (int i = 0; i < n; i++) {\n        printf(\"%d\\t%s\\t\\t%.2f\\n\", employees[i].id, employees[i].name, employees[i].salary);\n    }\n\n    return 0;\n}\n",
+        "fileName": "5_employee_struct.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_pointers.png"
+      },
+      {
+        "index": 6,
+        "title": "Program to calculate total and percentage marks of a student's using structure.",
+        "code": "#include <stdio.h>\n\nstruct Student {\n    char name[50];\n    int marks[5];\n    int total;\n    float percentage;\n};\n\nint main() {\n    int n;\n    printf(\"Enter number of students: \");\n    scanf(\"%d\", &n);\n    struct Student students[n];\n\n    for (int i = 0; i < n; i++) {\n        printf(\"\\nEnter name of student %d: \", i + 1);\n        scanf(\"%s\", students[i].name);\n        printf(\"Enter marks in 5 subjects:\\n\");\n        students[i].total = 0;\n        for (int j = 0; j < 5; j++) {\n            scanf(\"%d\", &students[i].marks[j]);\n            students[i].total += students[i].marks[j];\n        }\n        students[i].percentage = (float)students[i].total / 5;\n    }\n\n    printf(\"\\nStudent Performance:\\n\");\n    printf(\"Name\\t\\tTotal\\tPercentage\\n\");\n    for (int i = 0; i < n; i++) {\n        printf(\"%s\\t\\t%d\\t%.2f%%\\n\", students[i].name, students[i].total, students[i].percentage);\n    }\n\n    return 0;\n}\n",
+        "fileName": "6_student_struct.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_pointers.png"
+      }
+    ]
+  },
+  {
+    "labNum": 11,
+    "tutorial": "Tutorial for Lab 11",
+    "title": "FILE OPERATIONS",
+    "problems": [
+      {
+        "index": 1,
+        "title": "Program to create a file called emp.txt and store information about a person, in terms of his name, age and salary.",
+        "code": "#include <stdio.h>\n\nint main() {\n    FILE *fptr;\n    char name[50];\n    int age;\n    float salary;\n\n    fptr = fopen(\"emp.txt\", \"w\");\n    if (fptr == NULL) {\n        printf(\"Error opening file!\\n\");\n        return 1;\n    }\n\n    printf(\"Enter name: \");\n    scanf(\"%s\", name);\n    printf(\"Enter age: \");\n    scanf(\"%d\", &age);\n    printf(\"Enter salary: \");\n    scanf(\"%f\", &salary);\n\n    fprintf(fptr, \"Name: %s\\nAge: %d\\nSalary: %.2f\\n\", name, age, salary);\n    fclose(fptr);\n\n    printf(\"Data successfully written to emp.txt\\n\");\n    return 0;\n}\n",
+        "fileName": "1_create_file.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_files.png"
+      },
+      {
+        "index": 2,
+        "title": "Program which coples one file contents to another file.",
+        "code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    FILE *source, *dest;\n    char source_name[100], dest_name[100], ch;\n\n    printf(\"Enter source file name: \");\n    scanf(\"%s\", source_name);\n    source = fopen(source_name, \"r\");\n    if (source == NULL) {\n        printf(\"Could not open source file %s\\n\", source_name);\n        return 1;\n    }\n\n    printf(\"Enter destination file name: \");\n    scanf(\"%s\", dest_name);\n    dest = fopen(dest_name, \"w\");\n    if (dest == NULL) {\n        printf(\"Could not open destination file %s\\n\", dest_name);\n        fclose(source);\n        return 1;\n    }\n\n    while ((ch = fgetc(source)) != EOF) {\n        fputc(ch, dest);\n    }\n\n    printf(\"File copied successfully.\\n\");\n\n    fclose(source);\n    fclose(dest);\n    return 0;\n}\n",
+        "fileName": "2_copy_file.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_files.png"
+      },
+      {
+        "index": 3,
+        "title": "Program to read a file and after converting all lower case to upper case letters write it to another file.",
+        "code": "#include <stdio.h>\n#include <ctype.h>\n\nint main() {\n    FILE *source, *dest;\n    char source_name[100], dest_name[100], ch;\n\n    printf(\"Enter source file name: \");\n    scanf(\"%s\", source_name);\n    source = fopen(source_name, \"r\");\n    if (source == NULL) {\n        printf(\"Could not open source file %s\\n\", source_name);\n        return 1;\n    }\n\n    printf(\"Enter destination file name: \");\n    scanf(\"%s\", dest_name);\n    dest = fopen(dest_name, \"w\");\n    if (dest == NULL) {\n        printf(\"Could not open destination file %s\\n\", dest_name);\n        fclose(source);\n        return 1;\n    }\n\n    while ((ch = fgetc(source)) != EOF) {\n        if (islower(ch)) {\n            ch = toupper(ch);\n        }\n        fputc(ch, dest);\n    }\n\n    printf(\"File processed and case converted successfully.\\n\");\n\n    fclose(source);\n    fclose(dest);\n    return 0;\n}\n",
+        "fileName": "3_convert_case_file.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_files.png"
+      },
+      {
+        "index": 4,
+        "title": "Program to find the size of a given file.",
+        "code": "#include <stdio.h>\n\nint main() {\n    FILE *fptr;\n    char filename[100];\n    long size;\n\n    printf(\"Enter filename to find its size: \");\n    scanf(\"%s\", filename);\n\n    fptr = fopen(filename, \"r\");\n    if (fptr == NULL) {\n        printf(\"Could not open file %s\\n\", filename);\n        return 1;\n    }\n\n    fseek(fptr, 0, SEEK_END);\n    size = ftell(fptr);\n    fclose(fptr);\n\n    printf(\"Size of file %s is %ld bytes.\\n\", filename, size);\n\n    return 0;\n}\n",
+        "fileName": "4_file_size.c",
+        "videoUrl": "https://youtu.be/VvCHeDQvKX0",
+        "notesImageUrl": "notes/c_notes_files.png"
+      }
+    ]
+  }
+]
