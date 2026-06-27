@@ -1,0 +1,11 @@
+{
+  "buildCommand": "cd lab-portal && npm install && npm run build",
+  "outputDirectory": "lab-portal/dist",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
