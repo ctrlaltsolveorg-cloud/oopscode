@@ -51,62 +51,13 @@ import { theoryNotes } from './data/theoryNotes';
 import { quizzes } from './data/quizzes';
 import { supabase } from './utils/supabaseClient';
 import HomeLanding from './Home';
+import WorkspaceView from './components/WorkspaceView';
+import RevisionView from './components/RevisionView';
+import NotesView from './components/NotesView';
+import AdminPanel from './components/AdminPanel';
 
 
-// A tokenizer-based C syntax highlighter
-function highlightCSyntax(code) {
-  if (!code) return "";
 
-  const tokenRegex = /(\/\/.*|\/\*[\s\S]*?\*\/|"[^"\\]*(?:\\.[^"\\]*)*"|'[^'\\]*(?:\\.[^'\\]*)*'|#include\s*<[^>]+>|#include\s*"[^"]+"|\b\w+\b|[^\w\s]+|\s+)/g;
-
-  const keywords = new Set([
-    'int', 'float', 'double', 'char', 'void', 'struct', 'typedef', 'union',
-    'if', 'else', 'while', 'for', 'do', 'switch', 'case', 'default',
-    'break', 'continue', 'return', 'sizeof', 'const', 'extern', 'static'
-  ]);
-
-  const stdFunctions = new Set([
-    'main', 'printf', 'scanf', 'fopen', 'fclose', 'malloc', 'calloc', 'free',
-    'strlen', 'strcpy', 'strcat', 'strcmp', 'exit', 'sqrt', 'pow', 'abs', 'fgets'
-  ]);
-
-  let html = "";
-  let match;
-
-  tokenRegex.lastIndex = 0;
-  while ((match = tokenRegex.exec(code)) !== null) {
-    const token = match[0];
-
-    if (token.startsWith('//') || token.startsWith('/*')) {
-      html += `<span class="code-comment">${escapeHtml(token)}</span>`;
-    } else if (token.startsWith('"') || token.startsWith("'")) {
-      html += `<span class="code-string">${escapeHtml(token)}</span>`;
-    } else if (token.startsWith('#')) {
-      html += `<span class="code-include">${escapeHtml(token)}</span>`;
-    } else if (/^\d+$/.test(token)) {
-      html += `<span class="code-number">${token}</span>`;
-    } else if (/^[a-zA-Z_]\w*$/.test(token)) {
-      if (keywords.has(token)) {
-        html += `<span class="code-keyword">${token}</span>`;
-      } else if (stdFunctions.has(token)) {
-        html += `<span class="code-function">${token}</span>`;
-      } else {
-        html += escapeHtml(token);
-      }
-    } else {
-      html += escapeHtml(token);
-    }
-  }
-
-  return html;
-}
-
-function escapeHtml(text) {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
 
 
 function AdminLoginForm({ onLoginSuccess }) {

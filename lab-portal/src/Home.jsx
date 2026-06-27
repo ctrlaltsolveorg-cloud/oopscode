@@ -18,7 +18,8 @@ import {
   Info, 
   Star, 
   Clock, 
-  Sparkles
+  Sparkles,
+  Laptop
 } from 'lucide-react';
 
 const COURSES = [
