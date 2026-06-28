@@ -11,6 +11,9 @@ const localSavePlugin = () => ({
   name: 'local-save-plugin',
   configureServer(server) {
     server.middlewares.use((req, res, next) => {
+      try {
+        fs.appendFileSync(path.resolve(__dirname, 'middleware_debug.log'), `[${new Date().toISOString()}] ${req.method} ${req.url}\n`);
+      } catch (e) {}
       if (req.method === 'POST') {
         if (req.url === '/api/save-labs' || req.url === '/api/save-theory' || req.url === '/api/save-quizzes') {
           let body = '';
