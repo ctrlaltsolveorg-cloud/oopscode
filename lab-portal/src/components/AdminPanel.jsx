@@ -138,8 +138,23 @@ function ImageUploaderModal({ isOpen, onClose, targetProblemTitle, onInsertLink 
       }
     };
 
+    const preventDefault = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
     window.addEventListener('paste', handleGlobalPaste);
-    return () => window.removeEventListener('paste', handleGlobalPaste);
+    
+    if (isOpen) {
+      window.addEventListener('dragover', preventDefault);
+      window.addEventListener('drop', preventDefault);
+    }
+
+    return () => {
+      window.removeEventListener('paste', handleGlobalPaste);
+      window.removeEventListener('dragover', preventDefault);
+      window.removeEventListener('drop', preventDefault);
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;

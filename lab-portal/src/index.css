@@ -3019,6 +3019,10 @@ body {
   text-align: center;
 }
 
+.dropzone-label > * {
+  pointer-events: none;
+}
+
 .dropzone-icon {
   color: var(--text-muted);
   margin-bottom: 12px;
