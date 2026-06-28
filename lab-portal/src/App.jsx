@@ -143,8 +143,6 @@ function App() {
             });
           }
           setQuizData(newQuizzes);
-
-          setAdminSelectedLabNum(labsFromDb[0].labNum);
         } else {
           console.log("Supabase database tables are empty. Pre-populating from local static files...");
         }
@@ -158,10 +156,6 @@ function App() {
     loadDataFromSupabase();
   }, []);
 
-
-  // Selected admin helpers
-  const selectedAdminLab = labs.find(l => l.labNum === adminSelectedLabNum);
-  const selectedAdminTheory = theory[adminSelectedLabNum];
 
   // Navigation & States
   const [selectedLab, setSelectedLab] = useState(null);
@@ -228,9 +222,6 @@ function App() {
 
   const [autoPlayNext, setAutoPlayNext] = useState(true);
 
-  // Image Uploader Modal States
-  const [isImageUploaderOpen, setIsImageUploaderOpen] = useState(false);
-  const [uploaderTargetProblemIndex, setUploaderTargetProblemIndex] = useState(null);
 
   // Notes Modal & Virtual HUD Pointer States
   const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
@@ -1089,375 +1080,16 @@ function App() {
             </div>
           </div>
         ) : viewMode === 'admin' ? (
-          !session ? (
-            <AdminLoginForm onLoginSuccess={(sess) => setSession(sess)} />
-          ) : (
-            <div className="admin-container">
-              {/* Admin Sidebar - list of labs */}
-              <aside className="admin-sidebar">
-
-                <div className="admin-sidebar-header">
-                  <h3>Admin Console</h3>
-                  <button className="admin-add-btn" onClick={handleAddLab} title="Add New Lab">
-                    <Plus size={16} />
-                    <span>Add Lab</span>
-                  </button>
-                </div>
-
-                <div className="admin-labs-list">
-                  {labs.map((lab, index) => (
-                    <div
-                      key={lab.labNum}
-                      className={`admin-lab-item ${adminSelectedLabNum === lab.labNum ? 'active' : ''}`}
-                      onClick={() => setAdminSelectedLabNum(lab.labNum)}
-                    >
-                      <div className="admin-lab-meta">
-                        <span className="admin-lab-num">Lab {lab.labNum}</span>
-                        <span className="admin-lab-title" title={lab.title}>{lab.title}</span>
-                      </div>
-                      <div className="admin-lab-actions" onClick={e => e.stopPropagation()}>
-                        <button className="admin-icon-btn" onClick={() => handleMoveLab(index, -1)} disabled={index === 0} title="Move Up">
-                          <ArrowUp size={12} />
-                        </button>
-                        <button className="admin-icon-btn" onClick={() => handleMoveLab(index, 1)} disabled={index === labs.length - 1} title="Move Down">
-                          <ArrowDown size={12} />
-                        </button>
-                        <button className="admin-icon-btn text-danger" onClick={() => handleDeleteLab(lab.labNum)} title="Delete Lab">
-                          <Trash2 size={12} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </aside>
-
-              {/* Admin Main Area */}
-              <div className="admin-main">
-                {/* Top action bar for saving to codebase */}
-                <div className="admin-topbar">
-                  <div className="admin-status">
-                    {saveStatus ? <span className="save-status-msg">{saveStatus}</span> : <span>Database connected. Click save to apply changes.</span>}
-                  </div>
-                  <div className="admin-global-actions">
-                    <button className="action-btn-sm btn-save-codebase" onClick={handleSaveToSupabase}>
-                      <Save size={14} />
-                      <span>Save to Database</span>
-                    </button>
-                    <button className="action-btn-sm" onClick={handleDownloadBackup}>
-                      <Download size={14} />
-                      <span>Download Backup</span>
-                    </button>
-                    <button className="action-btn-sm" onClick={() => { setUploaderTargetProblemIndex(null); setIsImageUploaderOpen(true); }}>
-                      <Image size={14} />
-                      <span>Image to Link</span>
-                    </button>
-                    <button className="action-btn-sm text-danger" onClick={handleResetDefaults}>
-                      <RotateCcw size={14} />
-                      <span>Reset Defaults</span>
-                    </button>
-                    <button className="action-btn-sm btn-sign-out" onClick={() => supabase.auth.signOut()}>
-                      <X size={14} />
-                      <span>Sign Out</span>
-                    </button>
-                  </div>
-                </div>
-
-
-                {/* Selected Lab Editor */}
-                {selectedAdminLab ? (
-                  <div className="admin-editor-card">
-                    {/* Lab-wide Edit Fields */}
-                    <div className="admin-section-card">
-                      <h3>Lab {selectedAdminLab.labNum} Details</h3>
-                      <div className="form-row-grid">
-                        <div className="form-group">
-                          <label>Lab Number</label>
-                          <input
-                            type="number"
-                            value={selectedAdminLab.labNum}
-                            onChange={e => handleUpdateLabField('labNum', parseInt(e.target.value) || 0)}
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label>Tutorial Tag</label>
-                          <input
-                            type="text"
-                            value={selectedAdminLab.tutorial || ''}
-                            onChange={e => handleUpdateLabField('tutorial', e.target.value)}
-                          />
-                        </div>
-                        <div className="form-group double-col">
-                          <label>Lab Title</label>
-                          <input
-                            type="text"
-                            value={selectedAdminLab.title || ''}
-                            onChange={e => handleUpdateLabField('title', e.target.value)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Editor Tabs (Problems, Concept Notes, Quizzes) */}
-                    <div className="admin-tabs-header">
-                      {['problems', 'theory', 'quizzes'].map(tab => (
-                        <button
-                          key={tab}
-                          className={`admin-tab-btn ${adminActiveTab === tab ? 'active' : ''}`}
-                          onClick={() => setAdminActiveTab(tab)}
-                        >
-                          {tab.toUpperCase()}
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="admin-tab-content">
-                      {/* Tab 1: Problems Editor */}
-                      {adminActiveTab === 'problems' && (
-                        <div className="admin-problems-editor">
-                          <div className="section-header-row">
-                            <h4>Problems List ({selectedAdminLab.problems?.length || 0})</h4>
-                            <button className="admin-add-btn-sm" onClick={handleAddProblem}>
-                              <Plus size={14} />
-                              <span>Add Problem</span>
-                            </button>
-                          </div>
-
-                          <div className="admin-problems-list">
-                            {(selectedAdminLab.problems || []).map((prob, pIdx) => (
-                              <div key={prob.index} className="admin-problem-edit-row">
-                                <div className="problem-drag-meta">
-                                  <span className="p-badge">#{prob.index}</span>
-                                  <div className="p-nav-actions">
-                                    <button onClick={() => handleMoveProblem(pIdx, -1)} disabled={pIdx === 0}>
-                                      <ArrowUp size={12} />
-                                    </button>
-                                    <button onClick={() => handleMoveProblem(pIdx, 1)} disabled={pIdx === selectedAdminLab.problems.length - 1}>
-                                      <ArrowDown size={12} />
-                                    </button>
-                                  </div>
-                                </div>
-
-                                <div className="problem-inputs-grid">
-                                  <div className="form-group">
-                                    <label>Title</label>
-                                    <input
-                                      type="text"
-                                      value={prob.title || ''}
-                                      onChange={e => handleUpdateProblemField(pIdx, 'title', e.target.value)}
-                                    />
-                                  </div>
-                                  <div className="form-group">
-                                    <label>Filename</label>
-                                    <input
-                                      type="text"
-                                      value={prob.fileName || ''}
-                                      onChange={e => handleUpdateProblemField(pIdx, 'fileName', e.target.value)}
-                                    />
-                                  </div>
-                                  <div className="form-group">
-                                    <label>Video Link (YouTube URL)</label>
-                                    <input
-                                      type="text"
-                                      value={prob.videoUrl || ''}
-                                      onChange={e => handleUpdateProblemField(pIdx, 'videoUrl', e.target.value)}
-                                    />
-                                  </div>
-                                  <div className="form-group">
-                                    <div className="admin-field-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                                      <label style={{ margin: 0 }}>Notes Image Link</label>
-                                      <button
-                                        type="button"
-                                        className="admin-inline-upload-btn"
-                                        onClick={() => {
-                                          setUploaderTargetProblemIndex(pIdx);
-                                          setIsImageUploaderOpen(true);
-                                        }}
-                                      >
-                                        <Upload size={10} /> Upload / Paste
-                                      </button>
-                                    </div>
-                                    <input
-                                      type="text"
-                                      value={prob.notesImageUrl || ''}
-                                      onChange={e => handleUpdateProblemField(pIdx, 'notesImageUrl', e.target.value)}
-                                    />
-                                  </div>
-
-                                  <div className="form-group full-col">
-                                    <label>C Code Editor</label>
-                                    <textarea
-                                      className="admin-code-textarea"
-                                      value={prob.code || ''}
-                                      onChange={e => handleUpdateProblemField(pIdx, 'code', e.target.value)}
-                                      rows={12}
-                                    />
-                                  </div>
-                                </div>
-
-                                <button className="delete-problem-row-btn" onClick={() => handleDeleteProblem(pIdx)} title="Delete Problem">
-                                  <Trash2 size={16} />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Tab 2: Theory Notes Editor */}
-                      {adminActiveTab === 'theory' && (
-                        <div className="admin-theory-editor">
-                          <h4>Concept Notes for Lab {selectedAdminLab.labNum}</h4>
-
-                          {selectedAdminTheory ? (
-                            <div className="theory-inputs-grid">
-                              <div className="form-group">
-                                <label>Concept Name</label>
-                                <input
-                                  type="text"
-                                  value={selectedAdminTheory.concept || ''}
-                                  onChange={e => handleUpdateTheoryField('concept', e.target.value)}
-                                />
-                              </div>
-
-                              <div className="form-group full-col">
-                                <label>Summary Description</label>
-                                <textarea
-                                  value={selectedAdminTheory.summary || ''}
-                                  onChange={e => handleUpdateTheoryField('summary', e.target.value)}
-                                  rows={3}
-                                />
-                              </div>
-
-                              <div className="form-group full-col">
-                                <div className="section-header-row">
-                                  <label>Key Objectives / Points (List)</label>
-                                  <button className="admin-add-btn-sm" onClick={handleAddTheoryKeyPoint}>
-                                    <Plus size={12} />
-                                    <span>Add Point</span>
-                                  </button>
-                                </div>
-                                <div className="theory-keypoints-list">
-                                  {(selectedAdminTheory.keyPoints || []).map((kp, kpIdx) => (
-                                    <div key={kpIdx} className="keypoint-edit-row">
-                                      <input
-                                        type="text"
-                                        value={kp || ''}
-                                        onChange={e => handleUpdateTheoryKeyPoint(kpIdx, e.target.value)}
-                                      />
-                                      <button onClick={() => handleDeleteTheoryKeyPoint(kpIdx)}>
-                                        <Trash2 size={14} />
-                                      </button>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-
-                              <div className="form-group full-col">
-                                <label>Detailed Explanation (HTML support)</label>
-                                <textarea
-                                  value={selectedAdminTheory.explanation || ''}
-                                  onChange={e => handleUpdateTheoryField('explanation', e.target.value)}
-                                  rows={10}
-                                />
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="admin-empty-state">
-                              <p>No theory notes created for this Lab yet.</p>
-                              <button className="admin-add-btn" onClick={handleCreateTheoryNotes}>
-                                <Plus size={16} />
-                                <span>Create Concept Notes</span>
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Tab 3: Quizzes Editor */}
-                      {adminActiveTab === 'quizzes' && (
-                        <div className="admin-quizzes-editor">
-                          <div className="section-header-row">
-                            <h4>Lab Quiz Questions</h4>
-                            <button className="admin-add-btn-sm" onClick={handleAddQuizQuestion}>
-                              <Plus size={14} />
-                              <span>Add Question</span>
-                            </button>
-                          </div>
-
-                          <div className="admin-quizzes-list">
-                            {(quizData[selectedAdminLab.labNum] || []).map((quiz, qIdx) => (
-                              <div key={qIdx} className="admin-quiz-edit-row">
-                                <div className="quiz-inputs-grid">
-                                  <div className="form-group full-col">
-                                    <label>Question #{qIdx + 1}</label>
-                                    <input
-                                      type="text"
-                                      value={quiz.question || ''}
-                                      onChange={e => handleUpdateQuizField(qIdx, 'question', e.target.value)}
-                                    />
-                                  </div>
-
-                                  <div className="form-group options-col">
-                                    <label>Multiple Choices</label>
-                                    {(quiz.options || []).map((opt, optIdx) => (
-                                      <div key={optIdx} className="quiz-option-input-row">
-                                        <span className="opt-letter">{String.fromCharCode(65 + optIdx)}</span>
-                                        <input
-                                          type="text"
-                                          value={opt || ''}
-                                          onChange={e => handleUpdateQuizOption(qIdx, optIdx, e.target.value)}
-                                        />
-                                      </div>
-                                    ))}
-                                  </div>
-
-                                  <div className="form-group select-col">
-                                    <label>Correct Answer</label>
-                                    <select
-                                      value={quiz.answer}
-                                      onChange={e => handleUpdateQuizField(qIdx, 'answer', parseInt(e.target.value) || 0)}
-                                    >
-                                      {[0, 1, 2, 3].map(val => (
-                                        <option key={val} value={val}>
-                                          Option {String.fromCharCode(65 + val)}
-                                        </option>
-                                      ))}
-                                    </select>
-                                  </div>
-
-                                  <div className="form-group full-col">
-                                    <label>Explanation / Rationale</label>
-                                    <textarea
-                                      value={quiz.explanation || ''}
-                                      onChange={e => handleUpdateQuizField(qIdx, 'explanation', e.target.value)}
-                                      rows={3}
-                                    />
-                                  </div>
-                                </div>
-
-                                <button className="delete-problem-row-btn" onClick={() => handleDeleteQuizQuestion(qIdx)} title="Delete Question">
-                                  <Trash2 size={16} />
-                                </button>
-                              </div>
-                            ))}
-                            {(!quizData[selectedAdminLab.labNum] || quizData[selectedAdminLab.labNum].length === 0) && (
-                              <div className="admin-empty-state">
-                                <p>No quiz questions added for this Lab yet.</p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="admin-empty-state">
-                    <h3>Select a Lab from the sidebar or click "Add Lab" to start editing</h3>
-                  </div>
-                )}
-              </div>
-            </div>
-          )
+          <AdminPanel
+            labs={labs}
+            setLabs={setLabs}
+            theory={theory}
+            setTheory={setTheory}
+            quizData={quizData}
+            setQuizData={setQuizData}
+            session={session}
+            setSession={setSession}
+          />
         ) : (
           <div className="dashboard-content">
 
@@ -1686,31 +1318,6 @@ function App() {
           </div>
         </div>
       )}
-
-      {/* Floating Save Button for Admin panel */}
-      {viewMode === 'admin' && session && (
-        <button
-          className="admin-floating-save-btn"
-          onClick={handleSaveToSupabase}
-          title="Save Changes to Database"
-        >
-          <Save size={16} />
-          <span>Save to Database</span>
-        </button>
-      )}
-
-      {/* Image Uploader Modal Popup */}
-      <ImageUploaderModal
-        isOpen={isImageUploaderOpen}
-        onClose={() => setIsImageUploaderOpen(false)}
-        supabase={supabase}
-        targetProblemTitle={uploaderTargetProblemIndex !== null && selectedAdminLab?.problems[uploaderTargetProblemIndex] ? selectedAdminLab.problems[uploaderTargetProblemIndex].title : null}
-        onInsertLink={(url) => {
-          if (uploaderTargetProblemIndex !== null) {
-            handleUpdateProblemField(uploaderTargetProblemIndex, 'notesImageUrl', url);
-          }
-        }}
-      />
 
 
       {/* Futuristic Virtual HUD Pointer */}
