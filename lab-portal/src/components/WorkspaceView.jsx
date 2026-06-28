@@ -9,7 +9,7 @@ function escapeHtml(text) {
     .replace(/>/g, "&gt;");
 }
 
-function highlightCSyntax(code) {
+export function highlightCSyntax(code) {
   if (!code) return "";
 
   const tokenRegex = /(\/\/.*|\/\*[\s\S]*?\*\/|"[^"\\]*(?:\\.[^"\\]*)*"|'[^'\\]*(?:\\.[^'\\]*)*'|#include\s*<[^>]+>|#include\s*"[^"]+"|\b\w+\b|[^\w\s]+|\s+)/g;

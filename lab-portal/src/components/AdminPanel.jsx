@@ -739,24 +739,26 @@ export default function AdminPanel({
 
       setSaveStatus("Saved to Supabase database successfully!");
 
-      try {
-        await fetch('/api/save-labs', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(labs)
-        });
-        await fetch('/api/save-theory', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(theory)
-        });
-        await fetch('/api/save-quizzes', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(quizData)
-        });
-      } catch (e) {
-        console.log("Local filesystem sync skipped (expected in production)");
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        try {
+          await fetch('/api/save-labs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(labs)
+          });
+          await fetch('/api/save-theory', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(theory)
+          });
+          await fetch('/api/save-quizzes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(quizData)
+          });
+        } catch (e) {
+          console.log("Local filesystem sync failed:", e);
+        }
       }
 
       setTimeout(() => setSaveStatus(""), 4000);

@@ -51,7 +51,7 @@ import { theoryNotes } from './data/theoryNotes';
 import { quizzes } from './data/quizzes';
 import { supabase } from './utils/supabaseClient';
 import HomeLanding from './Home';
-import WorkspaceView from './components/WorkspaceView';
+import WorkspaceView, { highlightCSyntax } from './components/WorkspaceView';
 import RevisionView from './components/RevisionView';
 import NotesView from './components/NotesView';
 import AdminPanel from './components/AdminPanel';
